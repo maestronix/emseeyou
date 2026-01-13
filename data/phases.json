@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "name": "Phase 1",
+    "subtitle": "Avengers Assembled",
+    "color": "#3b82f6",
+    "startYear": 2008,
+    "endYear": 2012,
+    "description": "The beginning of the Marvel Cinematic Universe"
+  },
+  {
+    "id": 2,
+    "name": "Phase 2",
+    "subtitle": "The Infinity Saga Continues",
+    "color": "#8b5cf6",
+    "startYear": 2013,
+    "endYear": 2015,
+    "description": "Heroes face new threats as HYDRA emerges"
+  },
+  {
+    "id": 3,
+    "name": "Phase 3",
+    "subtitle": "The Infinity Saga Concludes",
+    "color": "#ef4444",
+    "startYear": 2016,
+    "endYear": 2019,
+    "description": "The fight against Thanos reaches its climax"
+  },
+  {
+    "id": 4,
+    "name": "Phase 4",
+    "subtitle": "The Multiverse Saga Begins",
+    "color": "#10b981",
+    "startYear": 2021,
+    "endYear": 2022,
+    "description": "New heroes emerge as the multiverse opens"
+  },
+  {
+    "id": 5,
+    "name": "Phase 5",
+    "subtitle": "The Multiverse Expands",
+    "color": "#f59e0b",
+    "startYear": 2023,
+    "endYear": 2024,
+    "description": "The multiverse threat grows"
+  },
+  {
+    "id": 6,
+    "name": "Phase 6",
+    "subtitle": "The Multiverse Saga Concludes",
+    "color": "#ec4899",
+    "startYear": 2025,
+    "endYear": 2027,
+    "description": "The final battle for the multiverse"
+  }
+]

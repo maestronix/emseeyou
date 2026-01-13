@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCU Watch Tracker - Curved Timeline Mockup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            phase1: '#3b82f6', // blue
+            phase2: '#8b5cf6', // purple
+            phase3: '#ef4444', // red
+            phase4: '#10b981', // green
+            phase5: '#f59e0b', // orange
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: #000;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .timeline-container {
+      position: relative;
+      min-width: 4000px;
+      height: 100vh;
+      background: linear-gradient(135deg, #000 0%, #0a0a1a 50%, #000 100%);
+    }
+
+    /* Phase gradient overlays */
+    .phase-gradient-1 {
+      background: radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+    }
+    .phase-gradient-2 {
+      background: radial-gradient(ellipse at 50% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+    }
+    .phase-gradient-3 {
+      background: radial-gradient(ellipse at 80% 50%, rgba(239, 68, 68, 0.15) 0%, transparent 50%);
+    }
+
+    /* Curved timeline path */
+    .timeline-path {
+      stroke-width: 2;
+      fill: none;
+      filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 30px currentColor);
+    }
+
+    .timeline-path-main {
+      stroke: rgba(239, 68, 68, 0.9);
+      stroke-width: 5;
+    }
+
+    .timeline-path-branch {
+      stroke: rgba(107, 114, 128, 0.6);
+      stroke-width: 2;
+      stroke-dasharray: 8, 4;
+      filter: drop-shadow(0 0 8px rgba(107, 114, 128, 0.4));
+    }
+
+    /* Media cards */
+    .media-card {
+      position: absolute;
+      width: 180px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .media-card:hover {
+      transform: scale(1.05) translateY(-8px);
+      z-index: 100;
+    }
+
+    .poster {
+      width: 100%;
+      height: 270px;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .poster-unwatched {
+      filter: grayscale(70%) brightness(0.6);
+    }
+
+    .poster-partial {
+      position: relative;
+    }
+
+    .poster-partial::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%; /* 50% unwatched */
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+      border-radius: 0 0 12px 12px;
+      pointer-events: none;
+    }
+
+    .watch-checkmark {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 36px;
+      height: 36px;
+      background: #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+    }
+
+    .progress-label {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.9);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-weight: bold;
+      font-size: 13px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .series-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(139, 92, 246, 0.9);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: bold;
+      backdrop-filter: blur(10px);
+    }
+
+    .multiverse-indicator {
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      right: -4px;
+      bottom: -4px;
+      border: 3px solid #f59e0b;
+      border-radius: 14px;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+      pointer-events: none;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .card-info {
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .card-meta {
+      font-size: 12px;
+      color: #9ca3af;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+
+    /* Phase labels */
+    .phase-label {
+      position: absolute;
+      font-size: 48px;
+      font-weight: 900;
+      opacity: 0.1;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Search bar */
+    .search-container {
+      position: fixed;
+      top: 20px;
+      right: 40px;
+      z-index: 1001;
+    }
+
+    .search-input {
+      width: 300px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      color: white;
+      font-size: 14px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+      width: 400px;
+    }
+
+    /* Stats overlay */
+    .stats-overlay {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 16px 32px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      gap: 32px;
+      z-index: 1001;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Minimal Header -->
+  <div class="header px-8 py-4 flex items-center justify-between">
+    <h1 class="text-2xl font-bold bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 bg-clip-text text-transparent">
+      MCU Timeline
+    </h1>
+    <button class="px-6 py-2 bg-purple-600 text-white rounded-full text-sm font-medium hover:bg-purple-700 transition-all">
+      Login with Trakt
+    </button>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-container">
+    <input
+      type="text"
+      placeholder="Search titles..."
+      class="search-input"
+    />
+  </div>
+
+  <!-- Timeline Container -->
+  <div class="timeline-container">
+    <!-- Phase gradient overlays -->
+    <div class="absolute inset-0 phase-gradient-1" style="left: 0; width: 1200px;"></div>
+    <div class="absolute inset-0 phase-gradient-2" style="left: 1200px; width: 1400px;"></div>
+    <div class="absolute inset-0 phase-gradient-3" style="left: 2600px; width: 1400px;"></div>
+
+    <!-- Phase labels -->
+    <div class="phase-label text-blue-400" style="top: 100px; left: 300px;">PHASE 1</div>
+    <div class="phase-label text-purple-400" style="top: 100px; left: 1700px;">PHASE 2</div>
+    <div class="phase-label text-red-400" style="top: 100px; left: 3000px;">PHASE 3</div>
+
+    <!-- SVG Timeline Path -->
+    <svg width="4000" height="100%" style="position: absolute; top: 0; left: 0; pointer-events: none;">
+      <!-- Horizontal timeline connecting items -->
+      <path
+        d="M 140,330 L 290,330 Q 340,330 340,280 L 340,190 Q 340,140 390,140 L 480,140 Q 530,140 530,190 L 530,280 Q 530,330 580,330 L 790,330 Q 840,330 840,380 L 840,480 Q 840,530 890,530 L 990,530 Q 1040,530 1040,480 L 1040,290 Q 1040,240 1090,240 L 1590,240 Q 1640,240 1640,290 L 1640,280 Q 1640,330 1690,330 L 1790,330 Q 1840,330 1840,380 L 1840,450 Q 1840,500 1890,500 L 2090,500 Q 2140,500 2140,450 L 2140,370 Q 2140,320 2190,320 L 2290,320 Q 2340,320 2340,270 L 2340,300 Q 2340,250 2390,250 L 2790,250 Q 2840,250 2840,300 L 2840,280 Q 2840,330 2890,330 L 3240,330"
+        class="timeline-path timeline-path-main"
+      />
+
+      <!-- Vertical phase separator 1 (Phase 1 -> Phase 2) with 90-degree curves and glow -->
+      <path
+        d="M 1150,100 L 1150,250 Q 1150,350 1250,350 L 1350,350 Q 1450,350 1450,450 L 1450,650"
+        style="stroke: rgba(139, 92, 246, 0.8); stroke-width: 4; fill: none; filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.8)) drop-shadow(0 0 40px rgba(139, 92, 246, 0.6));"
+      />
+
+      <!-- Vertical phase separator 2 (Phase 2 -> Phase 3) with 90-degree curves and glow -->
+      <path
+        d="M 2550,150 L 2550,300 Q 2550,400 2650,400 L 2750,400 Q 2850,400 2850,300 L 2850,600"
+        style="stroke: rgba(139, 92, 246, 0.8); stroke-width: 4; fill: none; filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.8)) drop-shadow(0 0 40px rgba(139, 92, 246, 0.6));"
+      />
+
+      <!-- Branch path example (non-multiverse content) - Agent Carter Episode 2 -->
+      <path
+        d="M 1640,290 L 1640,380 Q 1640,430 1690,430 L 1740,430"
+        class="timeline-path timeline-path-branch"
+      />
+      <!-- Branch path example (non-multiverse content) - Captain America -->
+      <path
+        d="M 2340,270 L 2340,150 Q 2340,100 2390,100 L 2540,100"
+        class="timeline-path timeline-path-branch"
+      />
+    </svg>
+
+    <!-- Media Cards positioned along the curve -->
+
+    <!-- Card 1: Watched Movie (on main timeline) -->
+    <div class="media-card" style="left: 50px; top: 250px;">
+      <div style="position: relative;">
+        <img
+          src="https://image.tmdb.org/t/p/w500/78lPtwv72eTNqFW9COBYI0dWDJa.jpg"
+          alt="Iron Man"
+          class="poster"
+        />
+        <div class="watch-checkmark">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">Iron Man</div>
+        <div class="card-meta">2008 • Movie</div>
+      </div>
+    </div>
+
+    <!-- Card 2: Watched Movie (on main timeline, curve up) -->
+    <div class="media-card" style="left: 350px; top: 50px;">
+      <div style="position: relative;">
+        <img
+          src="https://image.tmdb.org/t/p/w500/qnxhxuMOGY5hvFJaLylUR9QH4H6.jpg"
+          alt="The Incredible Hulk"
+          class="poster"
+        />
+        <div class="watch-checkmark">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">The Incredible Hulk</div>
+        <div class="card-meta">2008 • Movie</div>
+      </div>
+    </div>
+
+    <!-- Card 3: Partially Watched (50%) -->
+    <div class="media-card" style="left: 750px; top: 250px;">
+      <div class="poster-partial" style="position: relative;">
+        <img
+          src="https://image.tmdb.org/t/p/w500/6WBeq4fCfn7AN0o21W9qNcRF2l9.jpg"
+          alt="Iron Man 2"
+          class="poster"
+        />
+        <div class="progress-label">50%</div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">Iron Man 2</div>
+        <div class="card-meta">2010 • Movie</div>
+      </div>
+    </div>
+
+    <!-- Card 4: Unwatched -->
+    <div class="media-card" style="left: 1050px; top: 150px;">
+      <div style="position: relative;">
+        <img
+          src="https://image.tmdb.org/t/p/w500/prSfAi1xGrhLQNxVSUFh61xQ4Qy.jpg"
+          alt="Thor"
+          class="poster poster-unwatched"
+        />
+      </div>
+      <div class="card-info">
+        <div class="card-title" style="color: #9ca3af;">Thor</div>
+        <div class="card-meta">2011 • Movie</div>
+      </div>
+    </div>
+
+    <!-- Card 5: Episode on Main Timeline (30%) -->
+    <div class="media-card" style="left: 1550px; top: 250px;">
+      <div class="poster-partial" style="position: relative;">
+        <img
+          src="https://image.tmdb.org/t/p/w500/lJTHjDlx4AXCdXZ3rBUyx8K3ivl.jpg"
+          alt="Agent Carter S1E1"
+          class="poster"
+        />
+        <div class="series-badge">S1 E1</div>
+        <div class="progress-label">30%</div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">Agent Carter</div>
+        <div class="card-meta">2015 • Episode 1</div>
+      </div>
+    </div>
+
+    <!-- Card 6: Episode on Branch (Unwatched, Non-Multiverse) -->
+    <div class="media-card" style="left: 1650px; top: 350px;">
+      <div style="position: relative;">
+        <img
+          src="https://image.tmdb.org/t/p/w500/lJTHjDlx4AXCdXZ3rBUyx8K3ivl.jpg"
+          alt="Agent Carter S1E2"
+          class="poster poster-unwatched"
+        />
+        <div class="series-badge">S1 E2</div>
+      </div>
+      <div class="card-info">
+        <div class="card-title" style="color: #9ca3af;">Agent Carter</div>
+        <div class="card-meta">2015 • Episode 2</div>
+      </div>
+    </div>
+
+    <!-- Card 7: Movie on Main Timeline -->
+    <div class="media-card" style="left: 2050px; top: 330px;">
+      <div style="position: relative;">
+        <img
+          src="https://image.tmdb.org/t/p/w500/qhPtAc1TKbMPqNvcdXSOn9Bn7hZ.jpg"
+          alt="Iron Man 3"
+          class="poster poster-unwatched"
+        />
+      </div>
+      <div class="card-info">
+        <div class="card-title" style="color: #9ca3af;">Iron Man 3</div>
+        <div class="card-meta">2013 • Movie</div>
+      </div>
+    </div>
+
+    <!-- Card 8: Movie on Branch (Non-Multiverse) -->
+    <div class="media-card" style="left: 2450px; top: 20px;">
+      <div style="position: relative;">
+        <img
+          src="https://image.tmdb.org/t/p/w500/vSNxAJTlD0r02V9sPYpOjqDZXUK.jpg"
+          alt="Captain America"
+          class="poster poster-unwatched"
+        />
+      </div>
+      <div class="card-info">
+        <div class="card-title" style="color: #9ca3af;">Captain America</div>
+        <div class="card-meta">2011 • Movie</div>
+      </div>
+    </div>
+
+    <!-- Card 9: Movie on Main Timeline -->
+    <div class="media-card" style="left: 2750px; top: 250px;">
+      <div style="position: relative;">
+        <img
+          src="https://image.tmdb.org/t/p/w500/RYMX2wcKCBAr24UyPD7xwmjaTn.jpg"
+          alt="The Avengers"
+          class="poster poster-unwatched"
+        />
+      </div>
+      <div class="card-info">
+        <div class="card-title" style="color: #9ca3af;">The Avengers</div>
+        <div class="card-meta">2012 • Movie</div>
+      </div>
+    </div>
+
+    <!-- Card 10: Unwatched Movie -->
+    <div class="media-card" style="left: 3150px; top: 250px;">
+      <div style="position: relative;">
+        <img
+          src="https://image.tmdb.org/t/p/w500/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg"
+          alt="Doctor Strange"
+          class="poster poster-unwatched"
+        />
+      </div>
+      <div class="card-info">
+        <div class="card-title" style="color: #9ca3af;">Doctor Strange</div>
+        <div class="card-meta">2016 • Movie</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Stats Overlay -->
+  <div class="stats-overlay">
+    <div class="stat-item">
+      <div class="stat-value">65%</div>
+      <div class="stat-label">Progress</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">12/25</div>
+      <div class="stat-label">Movies</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">45/120</div>
+      <div class="stat-label">Episodes</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">87h</div>
+      <div class="stat-label">Watch Time</div>
+    </div>
+  </div>
+
+  <script>
+    // Smooth horizontal scrolling with mouse drag
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    document.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.search-input')) return;
+      isDown = true;
+      startX = e.pageX - window.pageXOffset;
+      scrollLeft = window.scrollX;
+      document.body.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mouseleave', () => {
+      isDown = false;
+      document.body.style.cursor = 'default';
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDown = false;
+      document.body.style.cursor = 'default';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - window.pageXOffset;
+      const walk = (x - startX) * 1.5;
+      window.scrollTo(scrollLeft - walk, 0);
+    });
+
+    // Card click handlers
+    document.querySelectorAll('.media-card').forEach(card => {
+      card.addEventListener('click', () => {
+        alert('Details modal would open here');
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+{
+  "userId": "demo-user",
+  "lastUpdated": "2024-01-15T10:30:00Z",
+  "watchProgress": [
+    {
+      "itemId": "iron-man-2008",
+      "status": "completed",
+      "watchedAt": "2024-01-10T20:00:00Z",
+      "progress": 100
+    },
+    {
+      "itemId": "the-incredible-hulk-2008",
+      "status": "completed",
+      "watchedAt": "2024-01-11T19:30:00Z",
+      "progress": 100
+    },
+    {
+      "itemId": "iron-man-2-2010",
+      "status": "in-progress",
+      "watchedAt": "2024-01-12T21:00:00Z",
+      "progress": 50,
+      "pausedAtMinute": 62
+    },
+    {
+      "itemId": "thor-2011",
+      "status": "unwatched",
+      "progress": 0
+    },
+    {
+      "itemId": "agent-carter-s01e01",
+      "status": "in-progress",
+      "watchedAt": "2024-01-14T18:00:00Z",
+      "progress": 30,
+      "pausedAtMinute": 13
+    },
+    {
+      "itemId": "agent-carter-s01e02",
+      "status": "unwatched",
+      "progress": 0
+    },
+    {
+      "itemId": "captain-america-first-avenger-2011",
+      "status": "unwatched",
+      "progress": 0
+    },
+    {
+      "itemId": "the-avengers-2012",
+      "status": "unwatched",
+      "progress": 0
+    }
+  ],
+  "stats": {
+    "totalItems": 25,
+    "completedItems": 12,
+    "moviesCompleted": 10,
+    "episodesCompleted": 15,
+    "totalMovies": 25,
+    "totalEpisodes": 120,
+    "totalWatchTimeMinutes": 5220,
+    "progressPercentage": 65
+  }
+}
