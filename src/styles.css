@@ -248,3 +248,64 @@ footer{background:#101116}
 @media(prefers-reduced-motion:reduce){
   .title-art,.title-art .title-art-color,.timeline-item,.timeline-node{transition:none!important}
 }
+
+
+/* Logo-first chronology: posters belong to the selected title detail only. */
+.timeline-item{flex-basis:clamp(205px,19vw,290px);padding-right:18px}
+.title-art{
+  display:block;
+  position:relative;
+  isolation:isolate;
+  width:100%;
+  height:auto;
+  aspect-ratio:2.7/1;
+  padding:8px 4px;
+  overflow:hidden;
+  border:0;
+  border-bottom:1px solid #ffffff18;
+  background:linear-gradient(180deg,#ffffff04,transparent);
+  box-shadow:none;
+  filter:none;
+  opacity:1;
+}
+.title-art .title-logo{
+  position:absolute;
+  inset:10% 5%;
+  width:90%;
+  height:80%;
+  max-width:90%;
+  max-height:80%;
+  object-fit:contain;
+  object-position:center;
+  transform:none;
+  padding:0;
+  border:0;
+  background:none;
+  box-shadow:none;
+}
+.title-art .title-logo-muted{filter:grayscale(1);opacity:.55}
+.title-art .title-logo-color{
+  filter:none;
+  opacity:1;
+  clip-path:inset(0 calc(100% - var(--color-reveal,0%)) 0 0);
+  transition:clip-path .3s ease;
+}
+.timeline-item.selected .title-art,
+.timeline-item:hover .title-art{
+  transform:translateY(-2px);
+  border-color:#d0ad7880;
+  background:linear-gradient(180deg,#d0ad780b,transparent);
+  box-shadow:none;
+}
+.timeline-item.selected .title-logo-muted,
+.timeline-item:hover .title-logo-muted{opacity:.18}
+.intro{min-height:350px;padding-top:76px;padding-bottom:46px}
+.intro h1{font-size:clamp(58px,8vw,100px);letter-spacing:-.06em}
+.intro-copy{margin-top:16px}
+@media(min-width:1100px){.intro{min-height:370px;padding-top:78px}}
+@media(max-width:650px){
+  .intro{min-height:300px;padding-top:55px;padding-bottom:35px}
+  .intro h1{font-size:clamp(48px,14vw,72px)}
+  .timeline-item{flex-basis:clamp(170px,50vw,210px);padding-right:10px}
+  .title-art{aspect-ratio:2.5/1;padding:6px 2px}
+}
