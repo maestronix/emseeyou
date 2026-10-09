@@ -50,7 +50,17 @@ type SavedProgress = { movies?: Record<string, boolean>; episodes?: Record<strin
 function readProgress(): SavedProgress {
   try {
     const saved = window.localStorage.getItem(progressKey)
-    return saved ? JSON.parse(saved) as SavedProgress : {}
+    if (!saved) return {}
+    const parsed: unknown = JSON.parse(saved)
+    if (!parsed || typeof parsed !== 'object') return {}
+    const value = parsed as SavedProgress
+    const validMap = (map: unknown): map is Record<string, boolean> =>
+      !!map && typeof map === 'object' && !Array.isArray(map) &&
+      Object.values(map).every(item => typeof item === 'boolean')
+    return {
+      movies: validMap(value.movies) ? value.movies : {},
+      episodes: validMap(value.episodes) ? value.episodes : {},
+    }
   } catch {
     return {}
   }
@@ -66,6 +76,9 @@ export default function App() {
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const [watched, setWatched] = useState<Record<string, boolean>>(() => readProgress().movies ?? {})
   const [episodeWatched, setEpisodeWatched] = useState<Record<string, boolean>>(() => readProgress().episodes ?? {})
+  const [storageAvailable, setStorageAvailable] = useState(() => {
+    try { window.localStorage.getItem(progressKey); return true } catch { return false }
+  })
   const trackRef = useRef<HTMLDivElement>(null)
   const ordered = useMemo<DisplayEntry[]>(() => {
     const seed = [...timeline.entries].sort((a, b) => a.order - b.order)
@@ -127,10 +140,18 @@ export default function App() {
   useEffect(() => {
     try {
       window.localStorage.setItem(progressKey, JSON.stringify({ movies: watched, episodes: episodeWatched }))
+      setStorageAvailable(true)
     } catch {
-      // Progress still works for the current session when browser storage is blocked or full.
+      // Keep in-memory progress usable, but tell the user it will not survive a reload.
+      setStorageAvailable(false)
     }
   }, [watched, episodeWatched])
+
+  function clearProgress() {
+    if (!window.confirm('Clear all watched progress for this browser? This cannot be undone.')) return
+    setWatched({})
+    setEpisodeWatched({})
+  }
 
 
   const closeDetails = useCallback(() => {
@@ -225,7 +246,22 @@ export default function App() {
           <p className="detail-meta">{selectedTitle?.type === 'series' ? 'SERIES · EPISODE TRACKING' : 'FEATURE FILM'} <span>·</span> {selected.chronology.start ?? 'CHRONOLOGY TBD'}</p>
           <p className="overview">{selectedTitle?.overview ?? 'Details will appear here when this title is added to the catalog.'}</p>
           {selectedTitle?.type === 'movie' ? <button className={`progress-button ${selectedProgressId && watched[selectedProgressId] ? 'complete' : ''}`} onClick={() => selectedProgressId && setWatched(previous => ({ ...previous, [selectedProgressId]: !previous[selectedProgressId] }))}>{selectedProgressId && watched[selectedProgressId] ? '✓ Watched' : 'Mark as watched'}</button> : episodes.length > 0 ?
-            <div className="episode-panel"><div className="episode-summary"><span>SEASON PROGRESS</span><strong>{doneCount} / {episodes.length} episodes · {Math.round(seriesProgress * 100)}%</strong></div><div className="progress-track"><span style={{ width: `${seriesProgress * 100}%` }}/></div>{episodes.map(episode => <label className="episode-row" key={episode.id}><input type="checkbox" checked={!!episodeWatched[episode.id]} onChange={event => setEpisodeWatched(previous => ({ ...previous, [episode.id]: event.target.checked }))}/><span><small>EPISODE {String(episode.number).padStart(2, '0')}</small>{episode.title}</span><span className="episode-check">{episodeWatched[episode.id] ? '✓' : ''}</span></label>)}</div> : <p className="overview">Episode tracking is unavailable for this demo series until its own series data is added.</p>}
+            <div className="episode-panel">
+              <div className="episode-summary"><span>SERIES PROGRESS</span><strong>{doneCount} / {episodes.length} episodes · {Math.round(seriesProgress * 100)}%{seriesProgress === 1 ? ' · Complete' : ''}</strong></div>
+              <div className="progress-track"><span style={{ width: `${seriesProgress * 100}%` }}/></div>
+              {selectedTitle?.seasons?.map(season => {
+                const seasonEpisodes = season.episodes
+                const seasonDone = seasonEpisodes.filter(episode => episodeWatched[episode.id]).length
+                const seasonProgress = seasonEpisodes.length ? seasonDone / seasonEpisodes.length : 0
+                return <section className="season-progress" key={season.id} aria-label={season.title}>
+                  <div className="episode-summary"><span>{season.title.toUpperCase()}</span><strong>{seasonDone} / {seasonEpisodes.length} · {Math.round(seasonProgress * 100)}%{seasonProgress === 1 ? ' · Complete' : ''}</strong></div>
+                  <div className="progress-track"><span style={{ width: `${seasonProgress * 100}%` }}/></div>
+                  {seasonEpisodes.map(episode => <label className="episode-row" key={episode.id}><input type="checkbox" checked={!!episodeWatched[episode.id]} onChange={event => setEpisodeWatched(previous => ({ ...previous, [episode.id]: event.target.checked }))}/><span><small>EPISODE {String(episode.number).padStart(2, '0')}</small>{episode.title}</span><span className="episode-check">{episodeWatched[episode.id] ? '✓' : ''}</span></label>)}
+                </section>
+              })}
+            </div> : <p className="overview">Episode tracking is unavailable for this demo series until its own series data is added to the catalog.</p>}
+          <div className="progress-actions"><button className="clear-progress-button" onClick={clearProgress}>Clear all progress…</button></div>
+          {!storageAvailable && <p className="storage-warning" role="status">Browser storage is unavailable. Progress works for this session only and will be lost when you reload or close this page.</p>}
         </div>
       </section>}
     </main>
