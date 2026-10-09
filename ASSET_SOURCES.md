@@ -32,3 +32,7 @@ No third-party assets have been approved for publication yet.
 | Repository path | Media ID | Type | Source | Retrieved | Usage basis / attribution | Status |
 |---|---|---|---|---|---|---|
 | — | — | — | — | — | — | — |
+
+| public/assets/backdrops/cityscape.svg | original | Backdrop | Locally authored SVG illustration; no third-party source | 2026-10-09 | Original repository artwork | approved |
+| public/assets/backdrops/cosmic.svg | original | Backdrop | Locally authored SVG illustration; no third-party source | 2026-10-09 | Original repository artwork | approved |
+| public/assets/backdrops/industrial.svg | original | Backdrop | Locally authored SVG illustration; no third-party source | 2026-10-09 | Original repository artwork | approved |
