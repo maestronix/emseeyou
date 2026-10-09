@@ -101,13 +101,14 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 **Milestone 2: Turn the deployed visual prototype into a usable, visually reviewed MVP.**
 
-The app is deployed, but the catalog is still sample data (Iron Man and one WandaVision episode), and the visual design and browser-level behavior have not yet been fully reviewed.
+The app is deployed, but the catalog remains sample data (Iron Man and one WandaVision episode). The intended visual reference is tracked in [issue #12](https://github.com/maestronix/emseeyou/issues/12#issuecomment-6078580032); implementation and screenshot comparison are tracked in [issue #18](https://github.com/maestronix/emseeyou/issues/18).
 
-PR [#17](https://github.com/maestronix/emseeyou/pull/17) proposes the first visual refinement and adds desktop/mobile Playwright smoke tests. The related checklist items remain open until CI passes and the deployed page receives a manual visual review.
+PR #17's refinement is present on main, but it did not establish visual fidelity to the reference. The issue #18 implementation must remain open for review until desktop/mobile screenshots have been compared with the mockup and CI plus deployment checks pass.
 
 ### Next actions
 
-1. Verify PR #17's build and browser checks, then review the live UI at desktop/mobile sizes.
-2. Finish the progress UX (season/series completion, export/import and clear-progress).
-3. Once the UI and data flow are stable, implement the TMDB maintainer importer with dry-run diffs and explicit asset provenance/rights review.
-4. Expand the curated MCU timeline in reviewed batches rather than importing an unverified full catalog at once.
+1. Review the issue #18 implementation against the original mockup at desktop and mobile sizes; capture before/after screenshots and iterate on any remaining differences.
+2. Verify CI and the deployed GitHub Pages build after the visual changes merge.
+3. Finish the progress UX (season/series completion, export/import and clear-progress).
+4. Once the UI and data flow are stable, implement the TMDB maintainer importer with dry-run diffs and explicit asset provenance/rights review.
+5. Expand the curated MCU timeline in reviewed batches rather than importing an unverified full catalog at once.
