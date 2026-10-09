@@ -87,3 +87,40 @@ test('reveals series title artwork in proportion to episode progress', async ({ 
   expect(revealedWidth).toBeLessThan(artworkWidth)
   await expect(wandaVision).toContainText('WandaVision')
 })
+
+
+test('derives season and series completion from episode progress', async ({ page }) => {
+  await page.getByRole('button', { name: /WandaVision, 2023/ }).click()
+  const checkboxes = page.locator('.episode-row input[type="checkbox"]')
+  await checkboxes.first().check()
+  await expect(page.locator('.season-progress')).toContainText('1 / 2')
+  await checkboxes.nth(1).check()
+  await expect(page.locator('.season-progress')).toContainText('2 / 2 · 100% · Complete')
+  await expect(page.locator('.episode-panel')).toContainText('2 / 2 episodes · 100% · Complete')
+})
+
+test('clears progress only after confirmation', async ({ page }) => {
+  await page.getByRole('button', { name: /Iron Man, 2008/ }).click()
+  await page.getByRole('button', { name: 'Mark as watched' }).click()
+  page.once('dialog', dialog => dialog.dismiss())
+  await page.getByRole('button', { name: 'Clear all progress…' }).click()
+  // The dismissed confirmation leaves existing progress intact.
+  await expect(page.getByRole('button', { name: '✓ Watched' })).toBeVisible()
+  page.once('dialog', dialog => dialog.accept())
+  await page.getByRole('button', { name: 'Clear all progress…' }).click()
+  await expect(page.getByRole('button', { name: 'Mark as watched' })).toBeVisible()
+  await expect(page.getByRole('button', { name: /Iron Man, 2008/ })).not.toHaveClass(/is-watched/)
+})
+
+test('keeps progress usable and explains when browser storage is unavailable', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(Storage.prototype, 'getItem', { configurable: true, value: () => { throw new Error('storage blocked') } })
+    Object.defineProperty(Storage.prototype, 'setItem', { configurable: true, value: () => { throw new Error('storage blocked') } })
+  })
+  await page.goto('./')
+  await page.getByRole('button', { name: /Iron Man, 2008/ }).click()
+  await expect(page.getByRole('status')).toContainText('session only')
+  await page.getByRole('button', { name: 'Mark as watched' }).click()
+  await expect(page.getByRole('button', { name: '✓ Watched' })).toBeVisible()
+  await expect(page.getByRole('status')).toBeVisible()
+})
