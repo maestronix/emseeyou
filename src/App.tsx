@@ -15,6 +15,7 @@ function assetUrl(path?: string | null) {
   if (!path) return fallback
   if (path.startsWith('http')) return path
   while (path.startsWith('/')) path = path.slice(1)
+  if (path.startsWith('public/')) path = path.slice('public/'.length)
   return import.meta.env.BASE_URL + path
 }
 const progressKey = 'emseeyou-progress-v1'
