@@ -87,8 +87,10 @@ export default function App() {
             return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%` } as React.CSSProperties} onClick={() => setSelected(entry)} aria-pressed={selected.id === entry.id} aria-label={`${title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
               <span className="title-art">
-                <img className="title-art-muted" src={title.assets?.logo?.path ?? fallback} alt="" onError={markImageFallback} />
-                <img className="title-art-color" src={title.assets?.logo?.path ?? fallback} alt="" aria-hidden="true" onError={markImageFallback} />
+                <img className="title-art-muted" src={title.assets?.poster?.path ?? fallback} alt="" onError={markImageFallback} />
+                <img className="title-art-color" src={title.assets?.poster?.path ?? fallback} alt="" aria-hidden="true" onError={markImageFallback} />
+                {title.assets?.logo?.path && <img className="title-logo" src={title.assets.logo.path} alt="" aria-hidden="true" onError={markImageFallback} />}
+                <span className="art-shade" aria-hidden="true" />
               </span>
               <span className="timeline-title">{title.title}</span>
               <span className="timeline-year">{entry.chronology.start ?? 'TBD'}</span>

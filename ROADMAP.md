@@ -103,7 +103,7 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 The app is deployed, but the catalog remains sample data (Iron Man and one WandaVision episode). The intended visual reference is tracked in [issue #12](https://github.com/maestronix/emseeyou/issues/12#issuecomment-6078580032); implementation and screenshot comparison are tracked in [issue #18](https://github.com/maestronix/emseeyou/issues/18).
 
-PR #17's refinement is present on main, but it did not establish visual fidelity to the reference. The issue #18 implementation must remain open for review until desktop/mobile screenshots have been compared with the mockup and CI plus deployment checks pass.
+PR #17 and PR #19's refinements are present on main, but neither established visual fidelity to the reference. A further rebuild is in progress on `fix/issue-18-mockup-rebuild`; issue #18 remains open until desktop/mobile screenshots have been compared directly with the mockup and CI plus deployment checks pass.
 
 ### Next actions
 
