@@ -11,6 +11,11 @@ const phases = [
   { label: 'Phase Four', year: '2021 — 2022', order: 2 },
 ]
 const fallback = `${import.meta.env.BASE_URL}assets/fallbacks/title-mark.svg`
+function assetUrl(path?: string | null) {
+  if (!path) return fallback
+  if (/^https?:\\/\\//i.test(path)) return path
+  return import.meta.env.BASE_URL + path.replace(/^\\/+/, '')
+}
 const progressKey = 'emseeyou-progress-v1'
 
 type SavedProgress = { movies?: Record<string, boolean>; episodes?: Record<string, boolean> }
@@ -67,10 +72,10 @@ export default function App() {
     </header>
     <main id="top">
       <section className="intro">
-        <p className="eyebrow"><span className="eyebrow-line" /> THE MARVEL CINEMATIC UNIVERSE</p>
-        <h1>Every story.<br/><span>One timeline.</span></h1>
-        <p className="intro-copy">Travel through the MCU in in-universe chronological order.<br className="desktop-break"/> Your journey, your pace.</p>
-        <a className="scroll-cue" href="#timeline">EXPLORE THE TIMELINE <span>↓</span></a>
+        <p className="eyebrow"><span className="eyebrow-line" /> MARVEL CINEMATIC UNIVERSE</p>
+        <h1>MCU <span>Chronology</span></h1>
+        <p className="intro-copy">Stories in in-universe order.</p>
+        <a className="scroll-cue" href="#timeline">VIEW TIMELINE <span>↓</span></a>
       </section>
       <section className="timeline-section" id="timeline" aria-labelledby="timeline-heading">
         <div className="section-heading"><div><p className="eyebrow">THE CHRONOLOGY</p><h2 id="timeline-heading">The timeline</h2></div><span className="entry-count">{ordered.length} STORIES · PREVIEW</span></div>
@@ -86,11 +91,8 @@ export default function App() {
             const isWatched = reveal === 100
             return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%` } as React.CSSProperties} onClick={() => setSelected(entry)} aria-pressed={selected.id === entry.id} aria-label={`${title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
-              <span className="title-art">
-                <img className="title-art-muted" src={title.assets?.poster?.path ?? fallback} alt="" onError={markImageFallback} />
-                <img className="title-art-color" src={title.assets?.poster?.path ?? fallback} alt="" aria-hidden="true" onError={markImageFallback} />
-                {title.assets?.logo?.path && <img className="title-logo" src={title.assets.logo.path} alt="" aria-hidden="true" onError={markImageFallback} />}
-                <span className="art-shade" aria-hidden="true" />
+              <span className="title-art logo-only">
+                <img src={assetUrl(title.assets?.logo?.path)} alt={title.title + ' logo'} onError={markImageFallback} />
               </span>
               <span className="timeline-title">{title.title}</span>
               <span className="timeline-year">{entry.chronology.start ?? 'TBD'}</span>
@@ -101,7 +103,7 @@ export default function App() {
         <p className="timeline-hint">Scroll horizontally to explore <span>·</span> Select a story to see details</p>
       </section>
       <section className="details-section" id="details" aria-live="polite" style={selectedBackdrop ? { '--detail-backdrop': `url("${selectedBackdrop}")` } as React.CSSProperties : undefined}>
-        <div className="details-art"><img src={selectedTitle?.assets?.poster?.path ?? fallback} alt="" onError={markImageFallback}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
+        <div className="details-art"><img src={assetUrl(selectedTitle?.assets?.poster?.path ?? selectedTitle?.assets?.logo?.path)} alt="" onError={markImageFallback}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
         <div className="details-content">
           <p className="eyebrow">STORY FILE <span className="file-number">/ {String(selected.order).padStart(2, '0')}</span></p>
           <h2>{selectedTitle?.title ?? 'Unknown title'}</h2>
