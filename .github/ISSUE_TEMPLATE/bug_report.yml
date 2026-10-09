@@ -1,0 +1,48 @@
+name: Bug or incorrect data
+description: Report a bug, wrong chronology, incorrect metadata, or a broken asset.
+title: "[Bug/Data]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve emseeyou. Please search existing issues first.
+  - type: input
+    id: title
+    attributes:
+      label: Affected title or page
+      description: Movie, series, season/episode, or UI area.
+      placeholder: e.g. Loki — Season 1
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Issue type
+      options:
+        - Incorrect in-universe chronology
+        - Incorrect title or metadata
+        - Missing or broken logo/poster/background
+        - Watch progress problem
+        - Visual or responsive layout bug
+        - Accessibility issue
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong?
+      description: Include what you expected to see and what actually happens.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source or evidence
+      description: Link to an official source or other reliable reference, if available.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Screenshots, browser/device details, or reproduction steps.
