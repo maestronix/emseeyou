@@ -86,7 +86,8 @@ export default function App() {
   }, [watched, episodeWatched])
 
   function moveFocus(direction: number) {
-    const current = ordered.findIndex(entry => entry.id === selected.id)
+    const selectedIndex = ordered.findIndex(entry => entry.id === selected.id)
+    const current = selectedIndex < 0 ? 0 : selectedIndex
     const nextIndex = Math.max(0, Math.min(ordered.length - 1, current + direction))
     const next = ordered[nextIndex]
     if (!next) return
