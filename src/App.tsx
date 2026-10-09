@@ -10,7 +10,7 @@ const phases = [
   { label: 'Phase One', year: '2008 — 2012', order: 1 },
   { label: 'Phase Four', year: '2021 — 2022', order: 2 },
 ]
-const fallback = '/assets/fallbacks/title-mark.svg'
+const fallback = `${import.meta.env.BASE_URL}assets/fallbacks/title-mark.svg`
 
 export default function App() {
   const [selected, setSelected] = useState<Entry>(timeline.entries[0])
