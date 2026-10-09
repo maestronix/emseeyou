@@ -65,7 +65,23 @@ def main() -> int:
                     errors.append(f"{path.relative_to(ROOT)}: duplicate episode ID {eid!r}")
                 episodes[eid] = (record.get("id"), sid, episode)
 
-    all_ids = set(movies) | set(series) | set(seasons) | set(episodes)
+    id_owners: dict[str, str] = {}
+    for category, mapping in (("movie", movies), ("series", series)):
+        for stable_id in mapping:
+            if stable_id in id_owners:
+                errors.append(f"duplicate ID {stable_id!r}: used by {id_owners[stable_id]} and {category}")
+            else:
+                id_owners[stable_id] = category
+    for stable_id, (series_id, _) in seasons.items():
+        if stable_id in id_owners:
+            errors.append(f"duplicate ID {stable_id!r}: used by {id_owners[stable_id]} and season")
+        else:
+            id_owners[stable_id] = "season"
+    for stable_id, (series_id, season_id, _) in episodes.items():
+        if stable_id in id_owners:
+            errors.append(f"duplicate ID {stable_id!r}: used by {id_owners[stable_id]} and episode")
+        else:
+            id_owners[stable_id] = "episode"
     for kind, records in (("movie", movies), ("series", series)):
         for record in records.values():
             assets = record.get("assets", {})
