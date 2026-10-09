@@ -97,7 +97,7 @@ export default function App() {
         demoTitle,
         demoLogo,
         demoType: demoType ?? 'movie',
-      }
+      } as DisplayEntry
     })
   }, [])
   const selectedTitle = titleForEntry(selected)
