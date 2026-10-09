@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://maestronix.github.io/emseeyou/schema/timeline.schema.json",
+  "title": "emseeyou curated timeline",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "entries"],
+  "properties": {
+    "version": {"const": 1},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "target", "order", "chronology"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+          "target": {
+            "type": "object", "additionalProperties": false, "required": ["type", "id"],
+            "properties": {
+              "type": {"enum": ["movie", "series", "season", "episode"]},
+              "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+              "seriesId": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+              "seasonId": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"}
+            },
+            "allOf": [
+              {"if": {"properties": {"type": {"enum": ["season", "episode"]}}}, "then": {"required": ["seriesId"]}},
+              {"if": {"properties": {"type": {"const": "episode"}}}, "then": {"required": ["seasonId"]}}
+            ]
+          },
+          "order": {"type": "integer", "minimum": 1},
+          "chronology": {
+            "type": "object", "additionalProperties": false, "required": ["status"],
+            "properties": {
+              "status": {"enum": ["confirmed", "approximate", "overlapping", "disputed"]},
+              "start": {"type": ["string", "null"]},
+              "end": {"type": ["string", "null"]},
+              "note": {"type": "string"},
+              "sources": {"type": "array", "items": {"type": "string", "format": "uri"}}
+            }
+          }
+        }
+      }
+    }
+  }
+}
