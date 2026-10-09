@@ -1,0 +1,23 @@
+{
+  "id": "wandavision",
+  "type": "series",
+  "title": "WandaVision",
+  "releaseDate": "2021-01-15",
+  "overview": "Wanda Maximoff and Vision live an idealized suburban life.",
+  "tmdb": {"id": 85271, "url": "https://www.themoviedb.org/tv/85271"},
+  "assets": {
+    "poster": {"path": null, "status": "missing", "source": null},
+    "backdrop": {"path": null, "status": "optional", "source": null},
+    "logo": {"path": null, "status": "missing", "source": null}
+  },
+  "seasons": [{
+    "id": "wandavision-season-1",
+    "number": 1,
+    "title": "Season 1",
+    "tmdb": {"id": 163216, "url": "https://www.themoviedb.org/tv/85271/season/1"},
+    "episodes": [
+      {"id": "wandavision-s01e01", "number": 1, "title": "Filmed Before a Live Studio Audience", "releaseDate": "2021-01-15", "tmdb": {"id": 199982, "url": "https://www.themoviedb.org/tv/85271/season/1/episode/1"}},
+      {"id": "wandavision-s01e02", "number": 2, "title": "Don't Touch That Dial", "releaseDate": "2021-01-15", "tmdb": {"id": 199983, "url": "https://www.themoviedb.org/tv/85271/season/1/episode/2"}}
+    ]
+  }]
+}
