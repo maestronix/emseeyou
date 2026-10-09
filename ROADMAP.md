@@ -103,11 +103,12 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 The app is deployed, but the catalog remains sample data (Iron Man and one WandaVision episode). The intended visual reference is tracked in [issue #12](https://github.com/maestronix/emseeyou/issues/12#issuecomment-6078580032); implementation and screenshot comparison are tracked in [issue #18](https://github.com/maestronix/emseeyou/issues/18).
 
-PR #17 and PR #19's refinements are present on main, but neither established visual fidelity to the reference. A further rebuild is in progress on `fix/issue-18-mockup-rebuild`; issue #18 remains open until desktop/mobile screenshots have been compared directly with the mockup and CI plus deployment checks pass.
+PR #17 and PR #19's refinements are present on main, but neither established visual fidelity to the reference. PR #20 was merged, but the deployed/main timeline still renders poster imagery behind entries and retains the generic hero copy. Follow-up work on `fix/logo-first-timeline-followup` switches timeline cards to local title-wordmark assets; these starter SVGs are placeholders, not official logos. Issue #18 remains open until real artwork sourcing and desktop/mobile screenshot comparison are verified.
 
 ### Next actions
 
-1. Review the issue #18 implementation against the original mockup at desktop and mobile sizes; capture before/after screenshots and iterate on any remaining differences.
+1. Replace starter wordmarks with appropriately sourced title logos and review local asset provenance/rights.
+2. Compare the current implementation with issue #12's mockup at desktop and mobile sizes; capture screenshots and iterate on remaining differences.
 2. Verify CI and the deployed GitHub Pages build after the visual changes merge.
 3. Finish the progress UX (season/series completion, export/import and clear-progress).
 4. Once the UI and data flow are stable, implement the TMDB maintainer importer with dry-run diffs and explicit asset provenance/rights review.
