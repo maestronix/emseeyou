@@ -11,7 +11,7 @@ test('renders the timeline and allows selecting stories', async ({ page }) => {
   await expect(ironMan).toBeVisible()
   await wandaVision.click()
   await expect(wandaVision).toHaveAttribute('aria-pressed', 'true')
-  await expect(page.locator('#details')).toContainText('WandaVision')
+  await expect(page.getByRole('dialog')).toContainText('WandaVision')
 })
 
 test('persists movie watch progress after reload', async ({ page }) => {
@@ -51,4 +51,25 @@ test('keeps the timeline usable on a narrow viewport', async ({ page }) => {
   const track = page.locator('.timeline-track')
   expect(await track.evaluate(element => element.scrollWidth)).toBeGreaterThan(0)
   await expect(page.getByRole('button', { name: /Iron Man, 2008/ })).toBeVisible()
+})
+
+test('opens details as an accessible overlay and closes with Escape', async ({ page }) => {
+  const ironMan = page.getByRole('button', { name: /Iron Man, 2008/ })
+  await ironMan.click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Close story details' })).toBeFocused()
+  await expect(page.locator('body')).toHaveCSS('overflow', 'hidden')
+  await page.keyboard.press('Escape')
+  await expect(dialog).toHaveCount(0)
+  await expect(ironMan).toBeFocused()
+  await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden')
+})
+
+test('closes details with the close button and allows selecting another story', async ({ page }) => {
+  await page.getByRole('button', { name: /Iron Man, 2008/ }).click()
+  await page.getByRole('button', { name: 'Close story details' }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await page.getByRole('button', { name: /WandaVision, 2023/ }).click()
+  await expect(page.getByRole('dialog')).toContainText('WandaVision')
 })
