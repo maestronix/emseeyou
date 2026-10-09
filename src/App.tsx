@@ -33,8 +33,8 @@ function backdropForEntry(entry: DisplayEntry, index: number) {
     ? 'cosmic.svg'
     : industrialStories.some(name => title.includes(name))
       ? 'industrial.svg'
-      : backdrops[index % backdrops.length]
-  return `${import.meta.env.BASE_URL}assets/backdrops/${backdrop}`
+      : null
+  return backdrop ? `${import.meta.env.BASE_URL}assets/backdrops/${backdrop}` : backdropUrl(index)
 }
 function assetUrl(path?: string | null) {
   if (!path) return fallback
