@@ -596,36 +596,27 @@ footer > a:last-child { margin-left: auto; }
 .storage-warning { margin: 14px 0 0; padding: 12px 14px; border-left: 2px solid var(--accent-bright); color: #f0c4c4; background: var(--accent-soft); font-size: 12px; line-height: 1.6; }
 
 
-/* Issue #57: keep the animated details reveal centered over the timeline. */
+/* Issue #57: reveal details from the horizontal center without covering the timeline. */
 .details-section.detail-reveal {
-  position: fixed;
-  z-index: 20;
-  top: 50%;
-  left: 50%;
-  width: min(1100px, calc(100vw - 48px));
-  max-height: min(82vh, 900px);
-  overflow: auto;
+  position: relative;
+  width: 100%;
+  max-height: none;
+  overflow: hidden;
   margin: 0;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 24px 100px #000c;
-  border: 1px solid #ffffff24;
-  animation: detail-overlay-reveal .42s cubic-bezier(.2,.75,.25,1) both;
+  transform-origin: center;
+  box-shadow: none;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+  animation: detail-page-reveal .42s cubic-bezier(.2,.75,.25,1) both;
 }
 .details-section.detail-reveal.is-closing {
-  animation: detail-overlay-hide .36s ease both;
-}
-@keyframes detail-overlay-reveal {
-  from { opacity: 0; clip-path: inset(0 50% 0 50%); transform: translate(-50%, -50%) scale(.99); }
-  to { opacity: 1; clip-path: inset(0 0 0 0); transform: translate(-50%, -50%) scale(1); }
-}
-@keyframes detail-overlay-hide {
-  from { opacity: 1; clip-path: inset(0 0 0 0); transform: translate(-50%, -50%) scale(1); }
-  to { opacity: 0; clip-path: inset(0 50% 0 50%); transform: translate(-50%, -50%) scale(.99); }
+  animation: detail-page-hide .36s ease both;
 }
 @media (max-width: 650px) {
   .details-section.detail-reveal {
-    width: calc(100vw - 24px);
-    max-height: 88vh;
-    padding: 24px 6% 30px;
+    width: 100%;
+    max-height: none;
+    padding: 32px 6% 40px;
   }
 }
