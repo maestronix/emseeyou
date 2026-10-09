@@ -131,3 +131,120 @@ footer{background:#101116}
 @media(prefers-reduced-motion:reduce){
   .title-art,.timeline-item,.timeline-node{transition:none!important}
 }
+
+
+/* Issue #18: make each chronology entry read as a cinematic title card. */
+.timeline-section{
+  padding-left:clamp(22px,6.5vw,110px);
+  background:
+    radial-gradient(ellipse at 78% 38%,#4a30301c,transparent 50%),
+    linear-gradient(180deg,#111116 0%,#17151b 52%,#111116 100%);
+}
+.section-heading{padding-right:clamp(22px,6.5vw,110px)}
+.phase-labels{padding-right:clamp(22px,6.5vw,110px)}
+.phase-labels div{min-width:clamp(150px,17vw,250px)}
+.timeline-track{
+  align-items:stretch;
+  gap:clamp(10px,1.2vw,20px);
+  padding:0 clamp(22px,6.5vw,110px) 22px 0;
+}
+.timeline-line{left:8px;right:clamp(22px,6.5vw,110px);top:22px;height:1px}
+.timeline-item{
+  flex:0 0 clamp(150px,14vw,208px);
+  padding:0 0 16px;
+  border:0;
+  scroll-snap-align:start;
+}
+.timeline-node{margin:15px 0 20px 8px;width:13px;height:13px}
+.title-art{
+  position:relative;
+  display:block;
+  isolation:isolate;
+  width:100%;
+  height:auto;
+  aspect-ratio:2/3;
+  padding:0;
+  overflow:hidden;
+  border:1px solid #ffffff1c;
+  background:#201e25;
+  box-shadow:0 16px 35px #0006;
+  filter:none;
+  opacity:1;
+  transform:none;
+}
+.title-art img.title-art-muted,
+.title-art img.title-art-color{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  max-width:none;
+  max-height:none;
+  object-fit:cover;
+  object-position:center 20%;
+  transform:none;
+}
+.title-art .title-art-muted{filter:grayscale(1) brightness(.62);opacity:.8}
+.title-art .title-art-color{
+  filter:none;
+  opacity:1;
+  clip-path:inset(0 calc(100% - var(--color-reveal,0%)) 0 0);
+  transition:clip-path .35s ease;
+}
+.title-art .title-logo{
+  position:absolute;
+  z-index:2;
+  left:8%;
+  right:8%;
+  bottom:10%;
+  top:auto;
+  width:84%;
+  height:auto;
+  max-width:84%;
+  max-height:28%;
+  object-fit:contain;
+  object-position:center;
+  transform:none;
+  filter:drop-shadow(0 2px 8px #000);
+}
+.title-art .art-shade{
+  position:absolute;
+  z-index:1;
+  inset:30% 0 0;
+  background:linear-gradient(180deg,transparent,#09090de8);
+  pointer-events:none;
+}
+.timeline-item.selected .title-art,
+.timeline-item:hover .title-art{
+  transform:translateY(-4px);
+  border-color:#d0ad78b8;
+  box-shadow:0 22px 42px #0009,0 0 0 1px #d0ad7833;
+}
+.timeline-item.selected .title-art-muted,
+.timeline-item:hover .title-art-muted{opacity:.35}
+.timeline-item.selected .timeline-node{box-shadow:0 0 0 5px #d0ad7820}
+.timeline-title{font-size:13px;line-height:1.4;min-height:2.8em;margin-top:13px;overflow-wrap:anywhere}
+.timeline-year{font-size:10px;letter-spacing:.04em;margin-top:6px}
+.item-progress{margin-top:12px}
+.details-section{scroll-margin-top:30px}
+@media(min-width:1100px){
+  .intro{min-height:480px;padding-left:clamp(60px,10vw,170px);padding-top:100px}
+  .timeline-section{padding-top:66px}
+  .timeline-item{flex-basis:clamp(170px,13.5vw,220px)}
+}
+@media(max-width:650px){
+  .timeline-section{padding-left:6%;padding-top:38px}
+  .section-heading{padding-right:6%}
+  .phase-labels{padding-right:6%}
+  .phase-labels div{min-width:140px}
+  .timeline-track{gap:12px;padding-right:6%}
+  .timeline-item{flex-basis:clamp(138px,42vw,170px);padding-bottom:10px}
+  .timeline-node{margin:14px 0 16px 7px}
+  .title-art{aspect-ratio:2/3}
+  .timeline-title{font-size:12px;margin-top:10px}
+  .timeline-year{font-size:9px}
+  .details-section{padding:38px 7% 48px}
+}
+@media(prefers-reduced-motion:reduce){
+  .title-art,.title-art .title-art-color,.timeline-item,.timeline-node{transition:none!important}
+}
