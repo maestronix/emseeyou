@@ -36,6 +36,9 @@ function readProgress(): SavedProgress {
 
 export default function App() {
   const [selected, setSelected] = useState<DisplayEntry>(timeline.entries[0])
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
   const [watched, setWatched] = useState<Record<string, boolean>>(() => readProgress().movies ?? {})
   const [episodeWatched, setEpisodeWatched] = useState<Record<string, boolean>>(() => readProgress().episodes ?? {})
   const trackRef = useRef<HTMLDivElement>(null)
@@ -88,6 +91,36 @@ export default function App() {
     }
   }, [watched, episodeWatched])
 
+
+  useEffect(() => {
+    if (!detailsOpen) return
+    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    closeButtonRef.current?.focus()
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setDetailsOpen(false)
+      }
+      if (event.key === 'Tab') {
+        const dialog = document.querySelector<HTMLElement>('.detail-dialog')
+        const focusable = dialog?.querySelectorAll<HTMLElement>('button, a[href], input, [tabindex]:not([tabindex="-1"])')
+        if (!focusable?.length) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKeyDown)
+      previousFocusRef.current?.focus()
+    }
+  }, [detailsOpen])
+
   function moveFocus(direction: number) {
     const selectedIndex = ordered.findIndex(entry => entry.id === selected.id)
     const current = selectedIndex < 0 ? 0 : selectedIndex
@@ -106,7 +139,7 @@ export default function App() {
   return <div className="app-shell">
     <header className="topbar">
       <a className="wordmark" href="#top" aria-label="emseeyou home">em<span>see</span>you<span className="wordmark-dot">.</span></a>
-      <nav aria-label="Main navigation"><a href="#timeline">Timeline</a><a href="#details">Explore</a></nav>
+      <nav aria-label="Main navigation"><a href="#timeline">Timeline</a></nav>
       <a className="github-link" href="https://github.com/maestronix/emseeyou" target="_blank" rel="noreferrer">GitHub ↗</a>
     </header>
     <main id="top">
@@ -129,7 +162,7 @@ export default function App() {
             const progressId = entry.demoTitle ? entry.id : title.id
             const reveal = title.type === 'movie' ? (watched[progressId] ? 100 : 0) : (titleEpisodes.length ? titleDone / titleEpisodes.length * 100 : 0)
             const isWatched = reveal === 100
-            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropUrl(index)}")` } as React.CSSProperties} onClick={() => setSelected(entry)} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
+            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropUrl(index)}")` } as React.CSSProperties} onClick={() => { setSelected(entry); setDetailsOpen(true) }} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
               <span className="title-art logo-only">
                 <img src={assetUrl(entry.demoLogo ?? title.assets?.logo?.path)} alt={(entry.demoTitle ?? title.title) + ' logo'} onError={markImageFallback} />
@@ -142,11 +175,12 @@ export default function App() {
         </div>
         <p className="timeline-hint">Scroll horizontally to explore <span>·</span> Select a story to see details</p>
       </section>
-      <section className="details-section" id="details" aria-live="polite" style={{ '--detail-backdrop': `url("${selectedBackdrop ? assetUrl(selectedBackdrop) : backdropUrl(ordered.findIndex(entry => entry.id === selected.id))}")` } as React.CSSProperties}>
+      {detailsOpen && <div className="detail-overlay" onMouseDown={event => { if (event.target === event.currentTarget) setDetailsOpen(false) }}>
+      <section className="details-section detail-dialog" id="details" role="dialog" aria-modal="true" aria-labelledby="detail-title" aria-live="polite" style={{ '--detail-backdrop': `url("${selectedBackdrop ? assetUrl(selectedBackdrop) : backdropUrl(ordered.findIndex(entry => entry.id === selected.id))}")` } as React.CSSProperties}>
         <div className="details-art"><img src={assetUrl(selectedTitle?.assets?.poster?.path ?? selectedTitle?.assets?.logo?.path)} alt="" onError={markImageFallback}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
         <div className="details-content">
           <p className="eyebrow">STORY FILE <span className="file-number">/ {String(selected.order).padStart(2, '0')}</span></p>
-          <h2>{selectedDisplayTitle ?? 'Unknown title'}</h2><p className="demo-notice">VISUAL TEST FIXTURE · NOT CURATED CANON DATA</p>
+          <div className="detail-title-row"><h2 id="detail-title">{selectedDisplayTitle ?? 'Unknown title'}</h2><button ref={closeButtonRef} className="detail-close" onClick={() => setDetailsOpen(false)} aria-label="Close story details">× <span>Close</span></button></div><p className="demo-notice">VISUAL TEST FIXTURE · NOT CURATED CANON DATA</p>
           <p className="detail-meta">{selectedTitle?.type === 'series' ? 'SERIES · EPISODE TRACKING' : 'FEATURE FILM'} <span>·</span> {selected.chronology.start ?? 'CHRONOLOGY TBD'}</p>
           <p className="overview">{selectedTitle?.overview ?? 'Details will appear here when this title is added to the catalog.'}</p>
           {selectedTitle?.type === 'movie' ? <button className={`progress-button ${watched[selectedTitle.id] ? 'complete' : ''}`} onClick={() => selectedProgressId && setWatched(previous => ({ ...previous, [selectedProgressId]: !previous[selectedProgressId] }))}>{selectedProgressId && watched[selectedProgressId] ? '✓ Watched' : 'Mark as watched'}</button> :
