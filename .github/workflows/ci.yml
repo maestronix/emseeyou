@@ -47,5 +47,17 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-# Production deployment remains isolated in deploy-pages.yml and only runs on pushes to main.
-# Pull requests are built and uploaded as artifacts; they never deploy to production.
+  browser:
+    name: Browser smoke tests (desktop and mobile)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run browser regression tests
+        run: npm run test:e2e
