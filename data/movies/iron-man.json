@@ -20,7 +20,7 @@
       "source": null
     },
     "logo": {
-      "path": "assets/logos/iron-man.svg",
+      "path": "public/assets/logos/iron-man.svg",
       "status": "available",
       "source": "Locally authored placeholder wordmark; not official franchise artwork."
     }
