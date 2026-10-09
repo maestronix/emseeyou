@@ -15,7 +15,7 @@ This file is the source of truth for project progress. Update checkboxes in the 
 - [x] Define repository layout and initial data conventions.
 - [x] Create public contribution and disclaimer documentation.
 - [ ] Confirm initial repository default branch and GitHub Pages settings.
-- [ ] Add issue forms and pull request template.
+- [x] Add issue forms and pull request template.
 - [ ] Add initial labels for data, design, bug, documentation and good-first-issue.
 
 ## Phase 1 — Data model and validation
@@ -64,9 +64,9 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 ## Phase 5 — Community workflow
 
-- [ ] Add issue form for incorrect data or broken assets.
-- [ ] Add issue form for missing movies/series/seasons/episodes.
-- [ ] Add pull request checklist and contribution guide examples.
+- [x] Add issue form for incorrect data or broken assets.
+- [x] Add issue form for missing movies/series/seasons/episodes.
+- [x] Add pull request checklist and initial contribution guide.
 - [ ] Add visible “Report an issue” and “Contribute on GitHub” links to the site.
 - [ ] Add CI checks for JSON, references, asset paths, file sizes and required source records.
 - [ ] Document asset provenance and removal/correction process.
