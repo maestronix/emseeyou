@@ -20,7 +20,7 @@
       "source": null
     },
     "logo": {
-      "path": "assets/logos/wandavision.svg",
+      "path": "public/assets/logos/wandavision.svg",
       "status": "available",
       "source": "Locally authored placeholder wordmark; not official franchise artwork."
     }
