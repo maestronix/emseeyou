@@ -23,6 +23,20 @@ test('persists movie watch progress after reload', async ({ page }) => {
   await expect(page.getByRole('button', { name: '✓ Watched' })).toBeVisible()
 })
 
+test('isolates watched state between demo timeline entries and persists each entry', async ({ page }) => {
+  const ironMan = page.getByRole('button', { name: /Iron Man, 2008/ })
+  const ironMan2 = page.getByRole('button', { name: /Iron Man 2, 2010/ })
+
+  await ironMan.click()
+  await page.getByRole('button', { name: 'Mark as watched' }).click()
+  await expect(ironMan).toHaveClass(/is-watched/)
+  await expect(ironMan2).not.toHaveClass(/is-watched/)
+
+  await page.reload()
+  await expect(page.getByRole('button', { name: /Iron Man, 2008/ })).toHaveClass(/is-watched/)
+  await expect(page.getByRole('button', { name: /Iron Man 2, 2010/ })).not.toHaveClass(/is-watched/)
+})
+
 test('supports keyboard navigation and reduced motion', async ({ page }) => {
   const track = page.locator('.timeline-track')
   await track.focus()
