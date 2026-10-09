@@ -75,11 +75,15 @@ test('closes details with the close button and allows selecting another story', 
 
 test('reveals series title artwork in proportion to episode progress', async ({ page }) => {
   const wandaVision = page.getByRole('button', { name: /WandaVision, 2023/ })
-  await expect(wandaVision.locator('.title-art-color')).toHaveCSS('width', '0px')
+  const colorReveal = wandaVision.locator('.title-art-color')
+  const initialWidth = await colorReveal.evaluate(element => element.getBoundingClientRect().width)
+  expect(initialWidth).toBe(0)
   await wandaVision.click()
   const firstEpisode = page.locator('.episode-row input[type="checkbox"]').first()
   await firstEpisode.check()
-  const colorReveal = wandaVision.locator('.title-art-color')
-  await expect(colorReveal).toHaveCSS('width', /.+/)
+  await expect.poll(() => colorReveal.evaluate(element => element.getBoundingClientRect().width)).toBeGreaterThan(0)
+  const revealedWidth = await colorReveal.evaluate(element => element.getBoundingClientRect().width)
+  const artworkWidth = await wandaVision.locator('.title-art').evaluate(element => element.getBoundingClientRect().width)
+  expect(revealedWidth).toBeLessThan(artworkWidth)
   await expect(wandaVision).toContainText('WandaVision')
 })
