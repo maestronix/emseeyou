@@ -4,6 +4,7 @@ import ironMan from '../data/movies/iron-man.json'
 import wandaVision from '../data/series/wandavision.json'
 
 type Entry = (typeof timeline.entries)[number]
+type DisplayEntry = Entry & { demoTitle?: string; demoLogo?: string }
 type Title = { id: string; type: string; title: string; overview?: string; releaseDate?: string; assets?: { logo?: { path: string | null }; poster?: { path: string | null }; backdrop?: { path: string | null } }; seasons?: { id: string; number: number; title: string; episodes: { id: string; number: number; title: string }[] }[] }
 const titles: Record<string, Title> = { [ironMan.id]: ironMan, [wandaVision.id]: wandaVision }
 const phases = [
@@ -32,12 +33,44 @@ function readProgress(): SavedProgress {
 }
 
 export default function App() {
-  const [selected, setSelected] = useState<Entry>(timeline.entries[0])
+  const [selected, setSelected] = useState<DisplayEntry>(timeline.entries[0])
   const [watched, setWatched] = useState<Record<string, boolean>>(() => readProgress().movies ?? {})
   const [episodeWatched, setEpisodeWatched] = useState<Record<string, boolean>>(() => readProgress().episodes ?? {})
   const trackRef = useRef<HTMLDivElement>(null)
-  const ordered = useMemo(() => [...timeline.entries].sort((a, b) => a.order - b.order), [])
+  const ordered = useMemo<DisplayEntry[]>(() => {
+    const seed = [...timeline.entries].sort((a, b) => a.order - b.order)
+    const stories = [
+      ['Iron Man', '2008', 'https://commons.wikimedia.org/wiki/Special:FilePath/Iron_Man_-_2008_movie_logo.svg'],
+      ['Captain America: The First Avenger', '1943', 'https://commons.wikimedia.org/wiki/Special:FilePath/Captain_America_The_First_Avenger_logo.svg'],
+      ['Captain Marvel', '1995', 'https://commons.wikimedia.org/wiki/Special:FilePath/Captain_Marvel_Logo_Black.svg'],
+      ['Iron Man 2', '2010', 'https://commons.wikimedia.org/wiki/Special:FilePath/Iron_Man_2_2010_Movie_Logo.svg'],
+      ['Thor', '2011', 'https://commons.wikimedia.org/wiki/Special:FilePath/Thor_Movie_Logo_2011.svg'],
+      ['The Avengers', '2012', 'https://commons.wikimedia.org/wiki/Special:FilePath/Marvel%27s_The_Avengers_logo.svg'],
+      ['Guardians of the Galaxy', '2014', 'https://commons.wikimedia.org/wiki/Special:FilePath/Guardians_of_the_Galaxy-Logo.svg'],
+      ['Black Panther', '2016', 'https://commons.wikimedia.org/wiki/Special:FilePath/Black_Panther_Logo_Black.svg'],
+      ['Doctor Strange', '2016', 'https://commons.wikimedia.org/wiki/Special:FilePath/Doctor-Strange-logo.svg'],
+      ['Avengers: Infinity War', '2018', 'https://commons.wikimedia.org/wiki/Special:FilePath/Avengers-infinity-war-logo.svg'],
+      ['WandaVision', '2023', 'https://commons.wikimedia.org/wiki/Special:FilePath/WandaVision_wordmark_logo.svg'],
+      ['Loki', '2023', 'https://commons.wikimedia.org/wiki/Special:FilePath/Loki_TV_series_logo.svg'],
+      ['Shang-Chi and the Legend of the Ten Rings', '2024', 'https://commons.wikimedia.org/wiki/Special:FilePath/Shang_Chi_Logo.svg'],
+      ['Eternals', '2024', 'https://commons.wikimedia.org/wiki/Special:FilePath/Eternals_Logo_Dark.svg'],
+      ['Spider-Man: No Way Home', '2024', 'https://commons.wikimedia.org/wiki/Special:FilePath/Spider_Man_No_Way_Home_Logo.svg'],
+      ['Doctor Strange in the Multiverse of Madness', '2025', 'https://commons.wikimedia.org/wiki/Special:FilePath/Multiverse_Of_Madness_Logo.svg'],
+    ] as const
+    return stories.map(([demoTitle, year, demoLogo], index) => {
+      const entry = seed[index % seed.length]
+      return {
+        ...entry,
+        id: 'demo-' + (index + 1) + '-' + entry.id,
+        order: index + 1,
+        chronology: { ...entry.chronology, start: year, note: 'Visual fixture only; verify chronology before production use.' },
+        demoTitle,
+        demoLogo,
+      }
+    })
+  }, [])
   const selectedTitle = titles[selected.target.type === 'episode' ? selected.target.seriesId! : selected.target.id]
+  const selectedDisplayTitle = selected.demoTitle ?? selectedTitle?.title
   const episodes = selectedTitle?.seasons?.flatMap(season => season.episodes) ?? []
   const doneCount = episodes.filter(episode => episodeWatched[episode.id]).length
   const seriesProgress = episodes.length ? doneCount / episodes.length : 0
@@ -53,7 +86,8 @@ export default function App() {
   }, [watched, episodeWatched])
 
   function moveFocus(direction: number) {
-    const current = ordered.findIndex(entry => entry.id === selected.id)
+    const selectedIndex = ordered.findIndex(entry => entry.id === selected.id)
+    const current = selectedIndex < 0 ? 0 : selectedIndex
     const nextIndex = Math.max(0, Math.min(ordered.length - 1, current + direction))
     const next = ordered[nextIndex]
     if (!next) return
@@ -80,7 +114,7 @@ export default function App() {
         <a className="scroll-cue" href="#timeline">VIEW TIMELINE <span>↓</span></a>
       </section>
       <section className="timeline-section" id="timeline" aria-labelledby="timeline-heading">
-        <div className="section-heading"><div><p className="eyebrow">THE CHRONOLOGY</p><h2 id="timeline-heading">The timeline</h2></div><span className="entry-count">{ordered.length} STORIES · PREVIEW</span></div>
+        <div className="section-heading"><div><p className="eyebrow">THE CHRONOLOGY</p><h2 id="timeline-heading">The timeline</h2></div><span className="entry-count">{ordered.length} STORIES · DEMO DATA</span></div>
         <div className="phase-labels" aria-hidden="true">{phases.map(phase => <div key={phase.label}><span>{phase.label}</span><small>{phase.year}</small></div>)}</div>
         <div className="timeline-track" ref={trackRef} tabIndex={0} aria-label="Timeline. Use left and right arrow keys to navigate." onKeyDown={event => { if (event.key === 'ArrowRight') { event.preventDefault(); moveFocus(1) } if (event.key === 'ArrowLeft') { event.preventDefault(); moveFocus(-1) } }}>
           <div className="timeline-line" />
@@ -91,12 +125,12 @@ export default function App() {
             const titleDone = titleEpisodes.filter(episode => episodeWatched[episode.id]).length
             const reveal = title.type === 'movie' ? (watched[title.id] ? 100 : 0) : (titleEpisodes.length ? titleDone / titleEpisodes.length * 100 : 0)
             const isWatched = reveal === 100
-            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%` } as React.CSSProperties} onClick={() => setSelected(entry)} aria-pressed={selected.id === entry.id} aria-label={`${title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
+            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%` } as React.CSSProperties} onClick={() => setSelected(entry)} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
               <span className="title-art logo-only">
-                <img src={assetUrl(title.assets?.logo?.path)} alt={title.title + ' logo'} onError={markImageFallback} />
+                <img src={assetUrl(entry.demoLogo ?? title.assets?.logo?.path)} alt={(entry.demoTitle ?? title.title) + ' logo'} onError={markImageFallback} />
               </span>
-              <span className="timeline-title">{title.title}</span>
+              <span className="timeline-title">{entry.demoTitle ?? title.title}</span>
               <span className="timeline-year">{entry.chronology.start ?? 'TBD'}</span>
               {title.type === 'series' && <span className="item-progress" aria-label={`${Math.round(reveal)} percent watched`}><span style={{ width: `${reveal}%` }} /></span>}
             </button>
@@ -108,7 +142,7 @@ export default function App() {
         <div className="details-art"><img src={assetUrl(selectedTitle?.assets?.poster?.path ?? selectedTitle?.assets?.logo?.path)} alt="" onError={markImageFallback}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
         <div className="details-content">
           <p className="eyebrow">STORY FILE <span className="file-number">/ {String(selected.order).padStart(2, '0')}</span></p>
-          <h2>{selectedTitle?.title ?? 'Unknown title'}</h2>
+          <h2>{selectedDisplayTitle ?? 'Unknown title'}</h2><p className="demo-notice">VISUAL TEST FIXTURE · NOT CURATED CANON DATA</p>
           <p className="detail-meta">{selectedTitle?.type === 'series' ? 'SERIES · EPISODE TRACKING' : 'FEATURE FILM'} <span>·</span> {selected.chronology.start ?? 'CHRONOLOGY TBD'}</p>
           <p className="overview">{selectedTitle?.overview ?? 'Details will appear here when this title is added to the catalog.'}</p>
           {selectedTitle?.type === 'movie' ? <button className={`progress-button ${watched[selectedTitle.id] ? 'complete' : ''}`} onClick={() => setWatched(previous => ({ ...previous, [selectedTitle.id]: !previous[selectedTitle.id] }))}>{watched[selectedTitle.id] ? '✓ Watched' : 'Mark as watched'}</button> :

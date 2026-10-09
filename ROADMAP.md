@@ -39,7 +39,10 @@ This file is the source of truth for project progress. Update checkboxes in the 
 - [x] Add a local missing-artwork fallback and reduced-motion support.
 - [x] Add horizontal keyboard navigation and responsive desktop/mobile layouts.
 - [ ] Run automated browser checks at desktop and mobile widths, including keyboard navigation and reduced-motion behavior.
+- [ ] Review alternating timeline cards and horizontal scrolling against the original mockup at desktop and mobile widths.
 - [ ] Review the live prototype against the intended visual direction and refine spacing, artwork scale, typography and timeline hierarchy.
+- [ ] Replace remote logo references in visual test fixtures with reviewed, local artwork before production catalog use.
+- [x] Preserve a direct reference to the original mockup in `docs/design/mockup-reference.md`.
 
 ## Phase 3 — Watch progress
 
