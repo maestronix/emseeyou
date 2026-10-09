@@ -1,0 +1,56 @@
+name: Missing movie or series
+description: Suggest a missing MCU film, series, season, or episode.
+title: "[Catalog]: Add "
+labels: ["data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please check the existing catalog and open issues first. A suggestion is reviewed before it is added.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Entry type
+      options:
+        - Movie
+        - Series
+        - Season
+        - Episode
+    validations:
+      required: true
+  - type: input
+    id: title
+    attributes:
+      label: Official title
+      placeholder: Enter the title as published.
+    validations:
+      required: true
+  - type: input
+    id: release
+    attributes:
+      label: Release date or year
+      placeholder: YYYY-MM-DD or YYYY
+  - type: input
+    id: tmdb
+    attributes:
+      label: TMDB URL or ID
+      description: Optional, but useful for matching metadata.
+  - type: textarea
+    id: chronology
+    attributes:
+      label: Suggested in-universe placement
+      description: If known, explain where it belongs and provide a source.
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: Link reliable references for the title and relevant details.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I checked that this title is not already in the catalog or an existing issue.
+          required: true
