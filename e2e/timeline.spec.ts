@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
+  await page.goto('./')
 })
 
 test('renders the timeline and allows selecting stories', async ({ page }) => {
