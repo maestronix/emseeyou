@@ -187,6 +187,7 @@ export default function App() {
             <div className="episode-panel"><div className="episode-summary"><span>SEASON PROGRESS</span><strong>{doneCount} / {episodes.length} episodes · {Math.round(seriesProgress * 100)}%</strong></div><div className="progress-track"><span style={{ width: `${seriesProgress * 100}%` }}/></div>{episodes.map(episode => <label className="episode-row" key={episode.id}><input type="checkbox" checked={!!episodeWatched[episode.id]} onChange={event => setEpisodeWatched(previous => ({ ...previous, [episode.id]: event.target.checked }))}/><span><small>EPISODE {String(episode.number).padStart(2, '0')}</small>{episode.title}</span><span className="episode-check">{episodeWatched[episode.id] ? '✓' : ''}</span></label>)}</div>}
         </div>
       </section>
+      </div>}
     </main>
     <footer><a className="wordmark footer-mark" href="#top">em<span>see</span>you<span className="wordmark-dot">.</span></a><p>AN UNOFFICIAL MCU FAN PROJECT · NOT AFFILIATED WITH MARVEL OR DISNEY</p><a href="https://github.com/maestronix/emseeyou/issues" target="_blank" rel="noreferrer">REPORT AN ISSUE ↗</a></footer>
   </div>
