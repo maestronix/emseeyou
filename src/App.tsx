@@ -11,6 +11,18 @@ const phases = [
   { label: 'Phase Four', year: '2021 — 2022', order: 2 },
 ]
 const fallback = `${import.meta.env.BASE_URL}assets/fallbacks/title-mark.svg`
+const progressKey = 'emseeyou-progress-v1'
+
+type SavedProgress = { movies?: Record<string, boolean>; episodes?: Record<string, boolean> }
+
+function readProgress(): SavedProgress {
+  try {
+    const saved = window.localStorage.getItem(progressKey)
+    return saved ? JSON.parse(saved) as SavedProgress : {}
+  } catch {
+    return {}
+  }
+}
 
 export default function App() {
   const [selected, setSelected] = useState<Entry>(timeline.entries[0])
@@ -22,26 +34,35 @@ export default function App() {
   const episodes = selectedTitle?.seasons?.flatMap(season => season.episodes) ?? []
   const doneCount = episodes.filter(episode => episodeWatched[episode.id]).length
   const seriesProgress = episodes.length ? doneCount / episodes.length : 0
+  const selectedBackdrop = selectedTitle?.assets?.backdrop?.path
+  const progress = selectedTitle?.type === 'series' ? seriesProgress : (watched[selectedTitle?.id ?? ''] ? 1 : 0)
 
   useEffect(() => {
-    const saved = localStorage.getItem('emseeyou-progress-v1')
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as { movies?: Record<string, boolean>; episodes?: Record<string, boolean> }
-        setWatched(parsed.movies ?? {})
-        setEpisodeWatched(parsed.episodes ?? {})
-      } catch { localStorage.removeItem('emseeyou-progress-v1') }
-    }
+    const saved = readProgress()
+    setWatched(saved.movies ?? {})
+    setEpisodeWatched(saved.episodes ?? {})
   }, [])
+
   useEffect(() => {
-    localStorage.setItem('emseeyou-progress-v1', JSON.stringify({ movies: watched, episodes: episodeWatched }))
+    try {
+      window.localStorage.setItem(progressKey, JSON.stringify({ movies: watched, episodes: episodeWatched }))
+    } catch {
+      // Progress still works for the current session when browser storage is blocked or full.
+    }
   }, [watched, episodeWatched])
 
   function moveFocus(direction: number) {
     const current = ordered.findIndex(entry => entry.id === selected.id)
-    const next = ordered[Math.max(0, Math.min(ordered.length - 1, current + direction))]
+    const nextIndex = Math.max(0, Math.min(ordered.length - 1, current + direction))
+    const next = ordered[nextIndex]
+    if (!next) return
     setSelected(next)
-    trackRef.current?.querySelectorAll<HTMLButtonElement>('[data-entry]')[Math.max(0, Math.min(ordered.length - 1, current + direction))]?.focus()
+    trackRef.current?.querySelectorAll<HTMLButtonElement>('[data-entry]')[nextIndex]?.focus()
+  }
+
+  function markImageFallback(event: React.SyntheticEvent<HTMLImageElement>) {
+    event.currentTarget.onerror = null
+    event.currentTarget.src = fallback
   }
 
   return <div className="app-shell">
@@ -65,28 +86,33 @@ export default function App() {
           {ordered.map((entry, index) => {
             const title = titles[entry.target.type === 'episode' ? entry.target.seriesId! : entry.target.id]
             if (!title) return null
-            const isWatched = title.type === 'movie' ? !!watched[title.id] : !!episodeWatched[entry.target.id]
-            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index } as React.CSSProperties} onClick={() => setSelected(entry)} aria-pressed={selected.id === entry.id} aria-label={`${title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
+            const titleEpisodes = title.seasons?.flatMap(season => season.episodes) ?? []
+            const titleDone = titleEpisodes.filter(episode => episodeWatched[episode.id]).length
+            const reveal = title.type === 'movie' ? (watched[title.id] ? 100 : 0) : (titleEpisodes.length ? titleDone / titleEpisodes.length * 100 : 0)
+            const isWatched = reveal === 100
+            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%` } as React.CSSProperties} onClick={() => setSelected(entry)} aria-pressed={selected.id === entry.id} aria-label={`${title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
               <span className="title-art">
-                <img src={title.assets?.logo?.path ?? fallback} alt="" onError={event => { event.currentTarget.onerror = null; event.currentTarget.src = fallback }} />
+                <img className="title-art-muted" src={title.assets?.logo?.path ?? fallback} alt="" onError={markImageFallback} />
+                <img className="title-art-color" src={title.assets?.logo?.path ?? fallback} alt="" aria-hidden="true" onError={markImageFallback} />
               </span>
               <span className="timeline-title">{title.title}</span>
               <span className="timeline-year">{entry.chronology.start ?? 'TBD'}</span>
+              {title.type === 'series' && <span className="item-progress" aria-label={`${Math.round(reveal)} percent watched`}><span style={{ width: `${reveal}%` }} /></span>}
             </button>
           })}
         </div>
         <p className="timeline-hint">Scroll horizontally to explore <span>·</span> Select a story to see details</p>
       </section>
-      <section className="details-section" id="details" aria-live="polite">
-        <div className="details-art"><img src={selectedTitle?.assets?.poster?.path ?? fallback} alt="" onError={event => { event.currentTarget.onerror = null; event.currentTarget.src = fallback }}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
+      <section className="details-section" id="details" aria-live="polite" style={selectedBackdrop ? { '--detail-backdrop': `url("${selectedBackdrop}")` } as React.CSSProperties : undefined}>
+        <div className="details-art"><img src={selectedTitle?.assets?.poster?.path ?? fallback} alt="" onError={markImageFallback}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
         <div className="details-content">
           <p className="eyebrow">STORY FILE <span className="file-number">/ {String(selected.order).padStart(2, '0')}</span></p>
           <h2>{selectedTitle?.title ?? 'Unknown title'}</h2>
           <p className="detail-meta">{selectedTitle?.type === 'series' ? 'SERIES · EPISODE TRACKING' : 'FEATURE FILM'} <span>·</span> {selected.chronology.start ?? 'CHRONOLOGY TBD'}</p>
           <p className="overview">{selectedTitle?.overview ?? 'Details will appear here when this title is added to the catalog.'}</p>
           {selectedTitle?.type === 'movie' ? <button className={`progress-button ${watched[selectedTitle.id] ? 'complete' : ''}`} onClick={() => setWatched(previous => ({ ...previous, [selectedTitle.id]: !previous[selectedTitle.id] }))}>{watched[selectedTitle.id] ? '✓ Watched' : 'Mark as watched'}</button> :
-            <div className="episode-panel"><div className="episode-summary"><span>SEASON PROGRESS</span><strong>{doneCount} / {episodes.length} episodes</strong></div><div className="progress-track"><span style={{ width: `${seriesProgress * 100}%` }}/></div>{episodes.map(episode => <label className="episode-row" key={episode.id}><input type="checkbox" checked={!!episodeWatched[episode.id]} onChange={event => setEpisodeWatched(previous => ({ ...previous, [episode.id]: event.target.checked }))}/><span><small>EPISODE {String(episode.number).padStart(2, '0')}</small>{episode.title}</span><span className="episode-check">{episodeWatched[episode.id] ? '✓' : ''}</span></label>)}</div>}
+            <div className="episode-panel"><div className="episode-summary"><span>SEASON PROGRESS</span><strong>{doneCount} / {episodes.length} episodes · {Math.round(seriesProgress * 100)}%</strong></div><div className="progress-track"><span style={{ width: `${seriesProgress * 100}%` }}/></div>{episodes.map(episode => <label className="episode-row" key={episode.id}><input type="checkbox" checked={!!episodeWatched[episode.id]} onChange={event => setEpisodeWatched(previous => ({ ...previous, [episode.id]: event.target.checked }))}/><span><small>EPISODE {String(episode.number).padStart(2, '0')}</small>{episode.title}</span><span className="episode-check">{episodeWatched[episode.id] ? '✓' : ''}</span></label>)}</div>}
         </div>
       </section>
     </main>
