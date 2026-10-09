@@ -4,10 +4,25 @@
   "title": "Iron Man",
   "releaseDate": "2008-05-02",
   "overview": "A weapons manufacturer builds a powered suit after being captured.",
-  "tmdb": {"id": 1726, "url": "https://www.themoviedb.org/movie/1726"},
+  "tmdb": {
+    "id": 1726,
+    "url": "https://www.themoviedb.org/movie/1726"
+  },
   "assets": {
-    "poster": {"path": null, "status": "missing", "source": null},
-    "backdrop": {"path": null, "status": "optional", "source": null},
-    "logo": {"path": null, "status": "missing", "source": null}
+    "poster": {
+      "path": null,
+      "status": "missing",
+      "source": null
+    },
+    "backdrop": {
+      "path": null,
+      "status": "optional",
+      "source": null
+    },
+    "logo": {
+      "path": "public/assets/logos/iron-man.svg",
+      "status": "available",
+      "source": "Locally authored placeholder wordmark; not official franchise artwork."
+    }
   }
 }

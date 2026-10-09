@@ -33,7 +33,7 @@ test('supports keyboard navigation and reduced motion', async ({ page }) => {
 })
 
 test('keeps the timeline usable on a narrow viewport', async ({ page }) => {
-  await expect(page.getByRole('heading', { name: 'Every story. One timeline.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'MCU Chronology' })).toBeVisible()
   const track = page.locator('.timeline-track')
   expect(await track.evaluate(element => element.scrollWidth)).toBeGreaterThan(0)
   await expect(page.getByRole('button', { name: /Iron Man, 2010/ })).toBeVisible()
