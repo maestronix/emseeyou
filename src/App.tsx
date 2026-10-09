@@ -4,9 +4,20 @@ import ironMan from '../data/movies/iron-man.json'
 import wandaVision from '../data/series/wandavision.json'
 
 type Entry = (typeof timeline.entries)[number]
-type DisplayEntry = Entry & { demoTitle?: string; demoLogo?: string }
+type DisplayEntry = Entry & { demoTitle?: string; demoLogo?: string; demoType?: 'movie' | 'series' }
 type Title = { id: string; type: string; title: string; overview?: string; releaseDate?: string; assets?: { logo?: { path: string | null }; poster?: { path: string | null }; backdrop?: { path: string | null } }; seasons?: { id: string; number: number; title: string; episodes: { id: string; number: number; title: string }[] }[] }
 const titles: Record<string, Title> = { [ironMan.id]: ironMan, [wandaVision.id]: wandaVision }
+function titleForEntry(entry: DisplayEntry): Title | undefined {
+  if (!entry.demoTitle) return titles[entry.target.type === 'episode' ? entry.target.seriesId! : entry.target.id]
+  if (entry.demoTitle === ironMan.title) return ironMan
+  if (entry.demoTitle === wandaVision.title) return wandaVision
+  return {
+    id: entry.id,
+    type: entry.demoType ?? 'movie',
+    title: entry.demoTitle,
+    overview: 'Demo entry only. Title-specific metadata and episode data have not been added to the catalog.',
+  }
+}
 const phases = [
   { label: 'Phase One', year: '2008 — 2012', order: 1 },
   { label: 'Phase Four', year: '2021 — 2022', order: 2 },
@@ -55,14 +66,14 @@ export default function App() {
       ['Black Panther', '2016', 'https://commons.wikimedia.org/wiki/Special:FilePath/Black_Panther_Logo_Black.svg'],
       ['Doctor Strange', '2016', 'https://commons.wikimedia.org/wiki/Special:FilePath/Doctor-Strange-logo.svg'],
       ['Avengers: Infinity War', '2018', 'https://commons.wikimedia.org/wiki/Special:FilePath/Avengers-infinity-war-logo.svg'],
-      ['WandaVision', '2023', 'https://commons.wikimedia.org/wiki/Special:FilePath/WandaVision_wordmark_logo.svg'],
-      ['Loki', '2023', 'https://commons.wikimedia.org/wiki/Special:FilePath/Loki_TV_series_logo.svg'],
+      ['WandaVision', '2023', 'https://commons.wikimedia.org/wiki/Special:FilePath/WandaVision_wordmark_logo.svg', 'series'],
+      ['Loki', '2023', 'https://commons.wikimedia.org/wiki/Special:FilePath/Loki_TV_series_logo.svg', 'series'],
       ['Shang-Chi and the Legend of the Ten Rings', '2024', 'https://commons.wikimedia.org/wiki/Special:FilePath/Shang_Chi_Logo.svg'],
       ['Eternals', '2024', 'https://commons.wikimedia.org/wiki/Special:FilePath/Eternals_Logo_Dark.svg'],
       ['Spider-Man: No Way Home', '2024', 'https://commons.wikimedia.org/wiki/Special:FilePath/Spider_Man_No_Way_Home_Logo.svg'],
       ['Doctor Strange in the Multiverse of Madness', '2025', 'https://commons.wikimedia.org/wiki/Special:FilePath/Multiverse_Of_Madness_Logo.svg'],
     ] as const
-    return stories.map(([demoTitle, year, demoLogo], index) => {
+    return stories.map(([demoTitle, year, demoLogo, demoType], index) => {
       const entry = seed[index % seed.length]
       return {
         ...entry,
@@ -71,10 +82,11 @@ export default function App() {
         chronology: { ...entry.chronology, start: year, note: 'Visual fixture only; verify chronology before production use.' },
         demoTitle,
         demoLogo,
+        demoType: demoType ?? 'movie',
       }
     })
   }, [])
-  const selectedTitle = titles[selected.target.type === 'episode' ? selected.target.seriesId! : selected.target.id]
+  const selectedTitle = titleForEntry(selected)
   const selectedDisplayTitle = selected.demoTitle ?? selectedTitle?.title
   const selectedProgressId = selected.demoTitle ? selected.id : selectedTitle?.id
   const episodes = selectedTitle?.seasons?.flatMap(season => season.episodes) ?? []
@@ -155,7 +167,7 @@ export default function App() {
         <div className="timeline-track" ref={trackRef} tabIndex={0} aria-label="Timeline. Use left and right arrow keys to navigate." onKeyDown={event => { if (event.key === 'ArrowRight') { event.preventDefault(); moveFocus(1) } if (event.key === 'ArrowLeft') { event.preventDefault(); moveFocus(-1) } }}>
           <div className="timeline-line" />
           {ordered.map((entry, index) => {
-            const title = titles[entry.target.type === 'episode' ? entry.target.seriesId! : entry.target.id]
+            const title = titleForEntry(entry)
             if (!title) return null
             const titleEpisodes = title.seasons?.flatMap(season => season.episodes) ?? []
             const titleDone = titleEpisodes.filter(episode => episodeWatched[episode.id]).length
@@ -183,8 +195,8 @@ export default function App() {
           <div className="detail-title-row"><h2 id="detail-title">{selectedDisplayTitle ?? 'Unknown title'}</h2><button ref={closeButtonRef} className="detail-close" onClick={() => setDetailsOpen(false)} aria-label="Close story details">× <span>Close</span></button></div><p className="demo-notice">VISUAL TEST FIXTURE · NOT CURATED CANON DATA</p>
           <p className="detail-meta">{selectedTitle?.type === 'series' ? 'SERIES · EPISODE TRACKING' : 'FEATURE FILM'} <span>·</span> {selected.chronology.start ?? 'CHRONOLOGY TBD'}</p>
           <p className="overview">{selectedTitle?.overview ?? 'Details will appear here when this title is added to the catalog.'}</p>
-          {selectedTitle?.type === 'movie' ? <button className={`progress-button ${watched[selectedTitle.id] ? 'complete' : ''}`} onClick={() => selectedProgressId && setWatched(previous => ({ ...previous, [selectedProgressId]: !previous[selectedProgressId] }))}>{selectedProgressId && watched[selectedProgressId] ? '✓ Watched' : 'Mark as watched'}</button> :
-            <div className="episode-panel"><div className="episode-summary"><span>SEASON PROGRESS</span><strong>{doneCount} / {episodes.length} episodes · {Math.round(seriesProgress * 100)}%</strong></div><div className="progress-track"><span style={{ width: `${seriesProgress * 100}%` }}/></div>{episodes.map(episode => <label className="episode-row" key={episode.id}><input type="checkbox" checked={!!episodeWatched[episode.id]} onChange={event => setEpisodeWatched(previous => ({ ...previous, [episode.id]: event.target.checked }))}/><span><small>EPISODE {String(episode.number).padStart(2, '0')}</small>{episode.title}</span><span className="episode-check">{episodeWatched[episode.id] ? '✓' : ''}</span></label>)}</div>}
+          {selectedTitle?.type === 'movie' ? <button className={`progress-button ${selectedProgressId && watched[selectedProgressId] ? 'complete' : ''}`} onClick={() => selectedProgressId && setWatched(previous => ({ ...previous, [selectedProgressId]: !previous[selectedProgressId] }))}>{selectedProgressId && watched[selectedProgressId] ? '✓ Watched' : 'Mark as watched'}</button> : episodes.length > 0 ?
+            <div className="episode-panel"><div className="episode-summary"><span>SEASON PROGRESS</span><strong>{doneCount} / {episodes.length} episodes · {Math.round(seriesProgress * 100)}%</strong></div><div className="progress-track"><span style={{ width: `${seriesProgress * 100}%` }}/></div>{episodes.map(episode => <label className="episode-row" key={episode.id}><input type="checkbox" checked={!!episodeWatched[episode.id]} onChange={event => setEpisodeWatched(previous => ({ ...previous, [episode.id]: event.target.checked }))}/><span><small>EPISODE {String(episode.number).padStart(2, '0')}</small>{episode.title}</span><span className="episode-check">{episodeWatched[episode.id] ? '✓' : ''}</span></label>)}</div> : <p className="overview">Episode tracking is unavailable for this demo series until its own series data is added.</p>}
         </div>
       </section>
       </div>}
