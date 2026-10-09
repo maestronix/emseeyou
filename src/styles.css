@@ -594,3 +594,38 @@ footer > a:last-child { margin-left: auto; }
 .clear-progress-button { padding: 9px 12px; border: 1px solid var(--line); border-radius: 3px; color: var(--muted); background: transparent; font-size: 11px; cursor: pointer; }
 .clear-progress-button:hover { border-color: var(--accent); color: var(--text); }
 .storage-warning { margin: 14px 0 0; padding: 12px 14px; border-left: 2px solid var(--accent-bright); color: #f0c4c4; background: var(--accent-soft); font-size: 12px; line-height: 1.6; }
+
+
+/* Issue #57: keep the animated details reveal centered over the timeline. */
+.details-section.detail-reveal {
+  position: fixed;
+  z-index: 20;
+  top: 50%;
+  left: 50%;
+  width: min(1100px, calc(100vw - 48px));
+  max-height: min(82vh, 900px);
+  overflow: auto;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 24px 100px #000c;
+  border: 1px solid #ffffff24;
+  animation: detail-overlay-reveal .42s cubic-bezier(.2,.75,.25,1) both;
+}
+.details-section.detail-reveal.is-closing {
+  animation: detail-overlay-hide .36s ease both;
+}
+@keyframes detail-overlay-reveal {
+  from { opacity: 0; clip-path: inset(0 50% 0 50%); transform: translate(-50%, -50%) scale(.99); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes detail-overlay-hide {
+  from { opacity: 1; clip-path: inset(0 0 0 0); transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; clip-path: inset(0 50% 0 50%); transform: translate(-50%, -50%) scale(.99); }
+}
+@media (max-width: 650px) {
+  .details-section.detail-reveal {
+    width: calc(100vw - 24px);
+    max-height: 88vh;
+    padding: 24px 6% 30px;
+  }
+}
