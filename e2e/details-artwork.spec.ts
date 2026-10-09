@@ -23,7 +23,7 @@ test('details artwork follows the selected title and uses only local assets', as
   await expect.poll(() => fallbackArt.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0)
 
   const remoteImages = await page.locator('.details-section img').evaluateAll(images =>
-    images.filter(image => /^https?:\\/\\//.test(image.getAttribute('src') ?? '')).length,
+    images.filter(image => image.getAttribute('src')?.startsWith('http')).length,
   )
   expect(remoteImages).toBe(0)
 })
