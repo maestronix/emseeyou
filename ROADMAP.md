@@ -36,6 +36,7 @@ This file is the source of truth for project progress. Update checkboxes in the 
 - [x] Render title artwork in grayscale by default and color for selected/watched entries.
 - [ ] Implement proportional logo color reveal for partially watched series.
 - [x] Implement blended, darkened local poster/backdrop backgrounds using locally authored artwork.
+- [x] Rotate between locally bundled cinematic timeline backdrops with cross-fades and respect reduced-motion preferences.
 - [x] Add a local missing-artwork fallback and reduced-motion support.
 - [x] Add horizontal keyboard navigation and responsive desktop/mobile layouts.
 - [ ] Define and implement a deliberate mobile browsing experience: compare a purpose-built vertical/tap-driven layout with the desktop timeline; horizontal scrolling alone is not an acceptable final mobile UX.
