@@ -34,12 +34,12 @@ jobs:
           compgen -G 'dist/assets/*.css' >/dev/null
 
           # Vite must rewrite the source entrypoint to generated, base-prefixed assets.
-          if grep -Eq 'src="/src/main\\.tsx"|src="/src/main\\.ts"' dist/index.html; then
+          if grep -Eq 'src="/src/main[.]tsx"|src="/src/main[.]ts"' dist/index.html; then
             echo "::error::Production HTML still references the source entrypoint."
             exit 1
           fi
-          grep -Eq 'src="/emseeyou/assets/[^"]+\\.js"' dist/index.html
-          grep -Eq 'href="/emseeyou/assets/[^"]+\\.css"' dist/index.html
+          grep -Eq 'src="/emseeyou/assets/[^"]+[.]js"' dist/index.html
+          grep -Eq 'href="/emseeyou/assets/[^"]+[.]css"' dist/index.html
           echo "Production HTML references generated assets under /emseeyou/assets/."
 
       - uses: actions/upload-pages-artifact@v3
