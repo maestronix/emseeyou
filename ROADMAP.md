@@ -35,9 +35,10 @@ This file is the source of truth for project progress. Update checkboxes in the 
 - [x] Implement a continuous horizontal timeline with phase labels and selectable story entries.
 - [x] Render title artwork in grayscale by default and color for selected/watched entries.
 - [ ] Implement proportional logo color reveal for partially watched series.
-- [ ] Implement blended, darkened local poster/backdrop backgrounds.
+- [x] Implement blended, darkened local poster/backdrop backgrounds using locally authored artwork.
 - [x] Add a local missing-artwork fallback and reduced-motion support.
 - [x] Add horizontal keyboard navigation and responsive desktop/mobile layouts.
+- [ ] Define and implement a deliberate mobile browsing experience: compare a purpose-built vertical/tap-driven layout with the desktop timeline; horizontal scrolling alone is not an acceptable final mobile UX.
 - [ ] Run automated browser checks at desktop and mobile widths, including keyboard navigation and reduced-motion behavior.
 - [ ] Review alternating timeline cards and horizontal scrolling against the original mockup at desktop and mobile widths.
 - [ ] Review the live prototype against the intended visual direction and refine spacing, artwork scale, typography and timeline hierarchy.
@@ -106,13 +107,14 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 The app is deployed, but the catalog remains sample data (Iron Man and one WandaVision episode). The intended visual reference is tracked in [issue #12](https://github.com/maestronix/emseeyou/issues/12#issuecomment-6078580032); implementation and screenshot comparison are tracked in [issue #18](https://github.com/maestronix/emseeyou/issues/18).
 
-PR #17 and PR #19's refinements are present on main, but neither established visual fidelity to the reference. PR #20 was merged, but the deployed/main timeline still renders poster imagery behind entries and retains the generic hero copy. Follow-up work on `fix/logo-first-timeline-followup` switches timeline cards to local title-wordmark assets; these starter SVGs are placeholders, not official logos. Issue #18 remains open until real artwork sourcing and desktop/mobile screenshot comparison are verified.
+Recent merged visual changes: PR #21 switched the timeline to local starter wordmarks and removed the generic hero copy; PR #22 added alternating timeline entries and a larger scrollable demo fixture; PR #29 unified the cinematic styling; PR #30 added locally authored, documented backdrop artwork; and PR #31 increased spacing and blended adjacent artwork. These are implementation milestones, not proof of visual acceptance. The title wordmarks are still remote demo references/placeholders, and issue #18's mockup comparison, desktop/mobile screenshots and final visual review remain outstanding. The mobile experience also needs a deliberate UX decision rather than relying on horizontal scrolling.
 
 ### Next actions
 
-1. Replace starter wordmarks with appropriately sourced title logos and review local asset provenance/rights.
-2. Compare the current implementation with issue #12's mockup at desktop and mobile sizes; capture screenshots and iterate on remaining differences.
-2. Verify CI and the deployed GitHub Pages build after the visual changes merge.
-3. Finish the progress UX (season/series completion, export/import and clear-progress).
-4. Once the UI and data flow are stable, implement the TMDB maintainer importer with dry-run diffs and explicit asset provenance/rights review.
-5. Expand the curated MCU timeline in reviewed batches rather than importing an unverified full catalog at once.
+1. Compare the current implementation with issue #12's mockup at desktop and mobile sizes; capture screenshots and fix remaining differences.
+2. Decide and implement a mobile-specific browsing experience that avoids making horizontal scrolling the primary interaction.
+3. Replace demo wordmark references with appropriately sourced local title logos and review asset provenance/rights.
+4. Verify CI and the deployed GitHub Pages build after visual changes merge.
+5. Finish progress UX (season/series completion, export/import and clear-progress).
+6. Once UI and data flow are stable, implement the TMDB maintainer importer with dry-run diffs and explicit asset provenance/rights review.
+7. Expand the curated MCU timeline in reviewed batches rather than importing an unverified full catalog at once.
