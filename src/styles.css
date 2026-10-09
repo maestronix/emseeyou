@@ -405,3 +405,62 @@ footer > a:last-child { margin-left: auto; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+
+
+/* Locally authored cinematic artwork: no runtime image requests or third-party dependencies. */
+.intro {
+  background:
+    linear-gradient(90deg, #101012 0%, #101012e8 32%, #10101265 100%),
+    url('../assets/backdrops/cosmic.svg') center 42% / cover no-repeat,
+    #101012;
+}
+.intro::before { inset: 0; background: linear-gradient(90deg, #10101222, transparent 65%); }
+.timeline-section {
+  background:
+    linear-gradient(180deg, #111113f2, #171618d9 52%, #111113f5),
+    url('../assets/backdrops/cityscape.svg') center / cover fixed,
+    #111113;
+}
+.timeline-item .title-art.logo-only {
+  isolation: isolate;
+  background: #171619;
+}
+.timeline-item .title-art.logo-only::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: '';
+  background-image: var(--item-backdrop);
+  background-position: center;
+  background-size: cover;
+  opacity: .88;
+  filter: saturate(.72);
+  transition: opacity .2s ease, transform .3s ease;
+}
+.timeline-item .title-art.logo-only::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: '';
+  background: linear-gradient(0deg, #111012d9, #11101238 55%, #1110128c);
+}
+.timeline-item.selected .title-art.logo-only::before,
+.timeline-item:hover .title-art.logo-only::before { opacity: 1; transform: scale(1.08); }
+.timeline-item.selected .title-art.logo-only img,
+.timeline-item:hover .title-art.logo-only img { filter: drop-shadow(0 2px 10px #000) brightness(1.12); }
+.details-section::before {
+  background-image: var(--detail-backdrop);
+  background-position: center;
+  background-size: cover;
+  filter: blur(16px) brightness(.32) saturate(.8);
+  opacity: .85;
+}
+.details-section::after {
+  background:
+    linear-gradient(100deg, #141315eF, #19171ad9 52%, #141315e8),
+    radial-gradient(ellipse at 80% 30%, #9b38352e, transparent 60%);
+}
+.details-art::before { filter: blur(8px) brightness(.38); opacity: .8; }
+@media (max-width: 650px) {
+  .timeline-section { background-attachment: scroll; }
+}
