@@ -25,6 +25,7 @@ This file is the source of truth for project progress. Update checkboxes in the 
 - [x] Define chronology fields and representation for confirmed, approximate, overlapping and disputed placements; detailed MCU placements remain curator work.
 - [x] Add representative fixture data for one movie and one series.
 - [x] Add schema, ID, timeline-reference and local-asset validation plus CI tests.
+- [x] Add regression tests that exercise duplicate IDs, broken timeline references and invalid/missing assets through the validator using isolated fixture trees.
 - [x] Document how to add or correct a title without running the importer.
 
 ## Phase 2 — Visual prototype
