@@ -73,6 +73,7 @@ export default function App() {
   }, [])
   const selectedTitle = titles[selected.target.type === 'episode' ? selected.target.seriesId! : selected.target.id]
   const selectedDisplayTitle = selected.demoTitle ?? selectedTitle?.title
+  const selectedProgressId = selected.demoTitle ? selected.id : selectedTitle?.id
   const episodes = selectedTitle?.seasons?.flatMap(season => season.episodes) ?? []
   const doneCount = episodes.filter(episode => episodeWatched[episode.id]).length
   const seriesProgress = episodes.length ? doneCount / episodes.length : 0
@@ -125,7 +126,8 @@ export default function App() {
             if (!title) return null
             const titleEpisodes = title.seasons?.flatMap(season => season.episodes) ?? []
             const titleDone = titleEpisodes.filter(episode => episodeWatched[episode.id]).length
-            const reveal = title.type === 'movie' ? (watched[title.id] ? 100 : 0) : (titleEpisodes.length ? titleDone / titleEpisodes.length * 100 : 0)
+            const progressId = entry.demoTitle ? entry.id : title.id
+            const reveal = title.type === 'movie' ? (watched[progressId] ? 100 : 0) : (titleEpisodes.length ? titleDone / titleEpisodes.length * 100 : 0)
             const isWatched = reveal === 100
             return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropUrl(index)}")` } as React.CSSProperties} onClick={() => setSelected(entry)} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
@@ -147,7 +149,7 @@ export default function App() {
           <h2>{selectedDisplayTitle ?? 'Unknown title'}</h2><p className="demo-notice">VISUAL TEST FIXTURE · NOT CURATED CANON DATA</p>
           <p className="detail-meta">{selectedTitle?.type === 'series' ? 'SERIES · EPISODE TRACKING' : 'FEATURE FILM'} <span>·</span> {selected.chronology.start ?? 'CHRONOLOGY TBD'}</p>
           <p className="overview">{selectedTitle?.overview ?? 'Details will appear here when this title is added to the catalog.'}</p>
-          {selectedTitle?.type === 'movie' ? <button className={`progress-button ${watched[selectedTitle.id] ? 'complete' : ''}`} onClick={() => setWatched(previous => ({ ...previous, [selectedTitle.id]: !previous[selectedTitle.id] }))}>{watched[selectedTitle.id] ? '✓ Watched' : 'Mark as watched'}</button> :
+          {selectedTitle?.type === 'movie' ? <button className={`progress-button ${watched[selectedTitle.id] ? 'complete' : ''}`} onClick={() => selectedProgressId && setWatched(previous => ({ ...previous, [selectedProgressId]: !previous[selectedProgressId] }))}>{selectedProgressId && watched[selectedProgressId] ? '✓ Watched' : 'Mark as watched'}</button> :
             <div className="episode-panel"><div className="episode-summary"><span>SEASON PROGRESS</span><strong>{doneCount} / {episodes.length} episodes · {Math.round(seriesProgress * 100)}%</strong></div><div className="progress-track"><span style={{ width: `${seriesProgress * 100}%` }}/></div>{episodes.map(episode => <label className="episode-row" key={episode.id}><input type="checkbox" checked={!!episodeWatched[episode.id]} onChange={event => setEpisodeWatched(previous => ({ ...previous, [episode.id]: event.target.checked }))}/><span><small>EPISODE {String(episode.number).padStart(2, '0')}</small>{episode.title}</span><span className="episode-check">{episodeWatched[episode.id] ? '✓' : ''}</span></label>)}</div>}
         </div>
       </section>
