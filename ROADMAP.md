@@ -4,7 +4,7 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 ## Status key
 
-- [ ] Not started / open
+- [ ] Not started / open, or awaiting verification
 - [x] Done and verified
 
 ## Phase 0 — Project foundation
@@ -14,9 +14,9 @@ This file is the source of truth for project progress. Update checkboxes in the 
 - [x] Agree static hosting and browser-local progress.
 - [x] Define repository layout and initial data conventions.
 - [x] Create public contribution and disclaimer documentation.
-- [ ] Confirm initial repository default branch and GitHub Pages settings.
+- [x] Confirm initial repository default branch and GitHub Pages deployment settings.
 - [x] Add issue forms and pull request template.
-- [ ] Add initial labels for data, design, bug, documentation and good-first-issue.
+- [ ] Verify initial labels cover data, design, bug, documentation and good-first-issue.
 
 ## Phase 1 — Data model and validation
 
@@ -37,17 +37,20 @@ This file is the source of truth for project progress. Update checkboxes in the 
 - [ ] Implement proportional logo color reveal for partially watched series.
 - [ ] Implement blended, darkened local poster/backdrop backgrounds.
 - [x] Add a local missing-artwork fallback and reduced-motion support.
-- [x] Add horizontal keyboard navigation and responsive desktop/mobile layouts; automated visual browser checks remain open.
+- [x] Add horizontal keyboard navigation and responsive desktop/mobile layouts.
+- [ ] Run automated browser checks at desktop and mobile widths, including keyboard navigation and reduced-motion behavior.
+- [ ] Review the live prototype against the intended visual direction and refine spacing, artwork scale, typography and timeline hierarchy.
 
 ## Phase 3 — Watch progress
 
-- [ ] Implement movie watched/unwatched controls.
-- [ ] Implement episode-level series progress.
-- [ ] Derive season and series completion from episode states.
-- [ ] Persist progress in localStorage using stable IDs.
-- [ ] Add progress export/import with validation and conflict handling.
+- [x] Add movie watched/unwatched controls to the prototype.
+- [x] Add episode-level watch controls and a series progress indicator to the prototype.
+- [x] Persist movie and episode progress in localStorage using stable IDs.
+- [ ] Derive and display season and series completion states from episode progress.
+- [ ] Add progress export/import with schema validation and conflict handling.
 - [ ] Add a clear-progress action with confirmation.
-- [ ] Test progress persistence across reloads and catalog updates.
+- [ ] Add browser-level regression tests for interactions, reload persistence and catalog updates.
+- [ ] Handle browser storage being unavailable or failing without breaking the app.
 
 ## Phase 4 — TMDB maintainer importer
 
@@ -65,24 +68,26 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 ## Phase 5 — Community workflow
 
-- [x] Add issue form for incorrect data or broken assets.
-- [x] Add issue form for missing movies/series/seasons/episodes.
+- [x] Add issue forms for incorrect data/broken assets and missing movies/series/seasons/episodes.
 - [x] Add pull request checklist and initial contribution guide.
-- [ ] Add visible “Report an issue” and “Contribute on GitHub” links to the site.
-- [x] Add CI checks for catalog JSON schemas, references and asset paths. File-size and source-provenance checks remain open.
-- [ ] Document asset provenance and removal/correction process.
+- [x] Add visible repository and “Report an issue” links to the site.
+- [x] Add CI checks for catalog JSON schemas, references and asset paths.
+- [ ] Add CI checks for asset file sizes and source-provenance records.
+- [x] Document asset provenance and a correction/removal process.
 - [ ] Add a “good first issue” guide for community contributors.
+- [ ] Complete the GitHub Actions workflow so all supported validation, tests and build checks run on pull requests; publish inspectable build artifacts and document the CI-only workflow.
 
 ## Phase 6 — Release and maintenance
 
-- [ ] Complete a rights/attribution review of all bundled third-party assets.
-- [ ] Complete the unofficial-project disclaimer and TMDB attribution as applicable.
-- [ ] Configure GitHub Pages deployment via GitHub Actions.
-- [ ] Add a production build and deployment smoke test.
-- [ ] Test base paths on GitHub Pages project-site URLs.
+- [ ] Complete a rights/attribution review of all bundled third-party assets before adding any new third-party artwork.
+- [x] Add the unofficial-project disclaimer; verify any TMDB attribution requirements before publishing imported content.
+- [x] Configure GitHub Pages deployment via GitHub Actions.
+- [x] Validate the generated production HTML and base-prefixed JS/CSS asset paths in CI.
+- [x] Verify the project-site base path on the live GitHub Pages site.
+- [ ] Add a live deployment smoke test that requests the published HTML and referenced assets.
 - [ ] Test accessibility, reduced motion and browser storage failure states.
-- [ ] Publish a first usable release.
-- [ ] Document how maintainers update data, assets and dependencies.
+- [ ] Publish a first usable release with a reviewed, useful portion of the MCU catalog.
+- [x] Document how contributors and maintainers update data and assets; keep dependency maintenance instructions current.
 
 ## Out of scope for the initial release
 
@@ -93,6 +98,14 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 ## Current milestone
 
-**Milestone 1: Data model + first visual prototype.**
+**Milestone 2: Turn the deployed visual prototype into a usable, visually reviewed MVP.**
 
-Next actions: commit the schema files and fixture examples, add validation, then build the horizontal timeline against that sample data before importing the entire MCU catalog.
+The app is deployed, but the catalog is still sample data (Iron Man and one WandaVision episode), and the visual design and browser-level behavior have not yet been fully reviewed.
+
+### Next actions
+
+1. Work through [issue #12](https://github.com/maestronix/emseeyou/issues/12): review the live UI at desktop/mobile sizes and agree on concrete visual changes before implementing them.
+2. Add automated browser smoke tests for timeline rendering, watch controls, persistence after reload, responsive layout and the production base path.
+3. Finish the progress UX (season/series completion, export/import and clear-progress).
+4. Once the UI and data flow are stable, implement the TMDB maintainer importer with dry-run diffs and explicit asset provenance/rights review.
+5. Expand the curated MCU timeline in reviewed batches rather than importing an unverified full catalog at once.
