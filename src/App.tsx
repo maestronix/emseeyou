@@ -205,8 +205,9 @@ export default function App() {
             const isWatched = reveal === 100
             return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropForEntry(entry, index)}")` } as React.CSSProperties} onClick={() => { if (closeTimerRef.current !== undefined) { window.clearTimeout(closeTimerRef.current); closeTimerRef.current = undefined } setSelected(entry); setDetailsClosing(false); setDetailsOpen(true) }} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
-              <span className="title-art logo-only">
-                <img data-testid="timeline-title-art" src={assetUrl(entry.demoLogo ?? title.assets?.logo?.path)} alt={(entry.demoTitle ?? title.title) + ' logo'} onError={markImageFallback} />
+              <span className="title-art logo-only" data-testid="timeline-title-art" aria-label={(entry.demoTitle ?? title.title) + ' title artwork'}>
+                <span className="title-art-base">{entry.demoTitle ?? title.title}</span>
+                <span className="title-art-color" style={{ width: `${reveal}%` }} aria-hidden="true">{entry.demoTitle ?? title.title}</span>
               </span>
               <span className="timeline-title">{entry.demoTitle ?? title.title}</span>
               <span className="timeline-year">{entry.chronology.start ?? 'TBD'}</span>
