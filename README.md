@@ -16,7 +16,7 @@ emseeyou is an unofficial, community-maintained fan project for exploring Marvel
 
 ## Status
 
-The repository is in its foundation/planning stage. See [ROADMAP.md](ROADMAP.md) for the tracked plan. Features are not considered complete until implemented and validated.
+The first visual timeline prototype is under development on a feature branch. The GitHub Actions workflow builds the app; see [ROADMAP.md](ROADMAP.md) for verified progress. The catalog is bundled from version-controlled JSON and the visitor-facing app makes no TMDB/API calls.
 
 ## Repository layout
 
@@ -50,6 +50,10 @@ ROADMAP.md
 ```
 
 The structure will be introduced incrementally; folders may not all exist yet.
+
+## Visual prototype
+
+The app uses React, TypeScript and Vite. To preview locally after cloning, run `npm install` and `npm run dev`; CI validates the production build with `npm run build`. The Vite base path is configured for GitHub Pages at `/emseeyou/`. A Pages preview requires Pages to be enabled and a deployment workflow configured; the current workflow only builds and verifies the bundle.
 
 ## Contributing
 
