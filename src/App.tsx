@@ -58,6 +58,7 @@ function readProgress(): SavedProgress {
 
 export default function App() {
   const [selected, setSelected] = useState<DisplayEntry>(timeline.entries[0])
+  const [timelineBackdrops, setTimelineBackdrops] = useState({ images: [0, 1], active: 0 })
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [detailsClosing, setDetailsClosing] = useState(false)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
@@ -105,6 +106,21 @@ export default function App() {
   const doneCount = episodes.filter(episode => episodeWatched[episode.id]).length
   const seriesProgress = episodes.length ? doneCount / episodes.length : 0
   const selectedBackdrop = selectedTitle?.assets?.backdrop?.path ? assetUrl(selectedTitle.assets.backdrop.path) : backdropForEntry(selected, ordered.findIndex(entry => entry.id === selected.id))
+
+  useEffect(() => {
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (motionPreference.matches) return
+    const interval = window.setInterval(() => {
+      setTimelineBackdrops(current => {
+        const nextLayer = 1 - current.active
+        const nextImage = (current.images[current.active] + 1) % backdrops.length
+        const images = [...current.images]
+        images[nextLayer] = nextImage
+        return { images, active: nextLayer }
+      })
+    }, 8000)
+    return () => window.clearInterval(interval)
+  }, [])
 
 
   useEffect(() => {
@@ -171,6 +187,8 @@ export default function App() {
         <a className="scroll-cue" href="#timeline">VIEW TIMELINE <span>↓</span></a>
       </section>
       <section className="timeline-section" id="timeline" aria-labelledby="timeline-heading">
+        <div className={`timeline-backdrop-layer ${timelineBackdrops.active === 0 ? 'is-active' : ''}`} style={{ backgroundImage: `url("${backdropUrl(timelineBackdrops.images[0])}")` }} aria-hidden="true" />
+        <div className={`timeline-backdrop-layer ${timelineBackdrops.active === 1 ? 'is-active' : ''}`} style={{ backgroundImage: `url("${backdropUrl(timelineBackdrops.images[1])}")` }} aria-hidden="true" />
         <div className="section-heading"><div><p className="eyebrow">THE CHRONOLOGY</p><h2 id="timeline-heading">The timeline</h2></div><span className="entry-count">{ordered.length} STORIES · DEMO DATA</span></div>
         <div className="phase-labels" aria-hidden="true">{phases.map(phase => <div key={phase.label}><span>{phase.label}</span><small>{phase.year}</small></div>)}</div>
         <div className="timeline-track" ref={trackRef} tabIndex={0} aria-label="Timeline. Use left and right arrow keys to navigate." onKeyDown={event => { if (event.key === 'ArrowRight') { event.preventDefault(); moveFocus(1) } if (event.key === 'ArrowLeft') { event.preventDefault(); moveFocus(-1) } }}>

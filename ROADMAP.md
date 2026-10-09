@@ -43,7 +43,7 @@ This file is the source of truth for project progress. Update it in the same PR 
 - [ ] Replace the detail modal with an in-page horizontal reveal. **In progress:** [PR #41](https://github.com/maestronix/emseeyou/pull/41) implements [Issue #36](https://github.com/maestronix/emseeyou/issues/36); keep open until merged and verified.
 - [ ] Load the selected title's artwork/logo in details. ([Issue #37](https://github.com/maestronix/emseeyou/issues/37))
 - [ ] Use the selected film/series backdrop in the details view. ([Issue #38](https://github.com/maestronix/emseeyou/issues/38))
-- [ ] Replace the static timeline backdrop with rotating, reviewed MCU imagery. ([Issue #39](https://github.com/maestronix/emseeyou/issues/39))
+- [ ] Replace the static timeline backdrop with rotating MCU imagery and reviewed assets. **In progress:** [PR #52](https://github.com/maestronix/emseeyou/pull/52) implements [Issue #39](https://github.com/maestronix/emseeyou/issues/39); keep open until merged and verified.
 - [ ] Design a mobile-specific browsing experience; horizontal scrolling alone is not acceptable as the primary phone interaction. ([Issue #40](https://github.com/maestronix/emseeyou/issues/40))
 - [ ] Complete visual acceptance against the original mockup with desktop/mobile screenshots and deployed-site review. ([Issue #42](https://github.com/maestronix/emseeyou/issues/42))
 - [ ] Add live deployment smoke checks and accessibility regression coverage. ([Issue #49](https://github.com/maestronix/emseeyou/issues/49))
