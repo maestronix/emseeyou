@@ -10,7 +10,7 @@ export default defineConfig({
   },
   projects: [
     { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile-chromium', use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } },
+    { name: 'mobile-chromium', use: { ...devices['Pixel 7'] } },
   ],
   webServer: {
     command: 'npm run dev -- --host 127.0.0.1 --port 4173',
