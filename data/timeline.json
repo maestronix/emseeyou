@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "id": "iron-man-timeline",
+      "target": {"type": "movie", "id": "iron-man"},
+      "order": 1,
+      "chronology": {"status": "confirmed", "start": "2010", "end": null, "note": "Illustrative placement; curate before production use.", "sources": []}
+    },
+    {
+      "id": "wandavision-episode-1-timeline",
+      "target": {"type": "episode", "id": "wandavision-s01e01", "seriesId": "wandavision", "seasonId": "wandavision-season-1"},
+      "order": 2,
+      "chronology": {"status": "approximate", "start": "2023", "end": null, "note": "Example episode-level entry; chronology is intentionally curated separately from release dates.", "sources": []}
+    }
+  ]
+}

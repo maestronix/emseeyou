@@ -20,12 +20,12 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 ## Phase 1 — Data model and validation
 
-- [ ] Define and commit JSON Schema for movie, series, season/episode and timeline records.
-- [ ] Define stable internal IDs and TMDB ID mapping rules.
-- [ ] Define chronology rules for dates, flashbacks, overlapping seasons, specials and ambiguous placements.
-- [ ] Add representative fixture data for one movie and one series.
-- [ ] Add automated validation for schemas, unique IDs, references and missing local assets.
-- [ ] Document how to add or correct a title without running the importer.
+- [x] Define and commit JSON Schema for movie, series, season/episode and timeline records.
+- [x] Define stable internal IDs and TMDB ID mapping rules.
+- [x] Define chronology fields and representation for confirmed, approximate, overlapping and disputed placements; detailed MCU placements remain curator work.
+- [x] Add representative fixture data for one movie and one series.
+- [x] Add schema, ID, timeline-reference and local-asset validation plus CI tests.
+- [x] Document how to add or correct a title without running the importer.
 
 ## Phase 2 — Visual prototype
 
@@ -68,7 +68,7 @@ This file is the source of truth for project progress. Update checkboxes in the 
 - [x] Add issue form for missing movies/series/seasons/episodes.
 - [x] Add pull request checklist and initial contribution guide.
 - [ ] Add visible “Report an issue” and “Contribute on GitHub” links to the site.
-- [ ] Add CI checks for JSON, references, asset paths, file sizes and required source records.
+- [x] Add CI checks for catalog JSON schemas, references and asset paths. File-size and source-provenance checks remain open.
 - [ ] Document asset provenance and removal/correction process.
 - [ ] Add a “good first issue” guide for community contributors.
 
