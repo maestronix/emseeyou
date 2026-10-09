@@ -254,7 +254,7 @@ button { -webkit-tap-highlight-color: transparent; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px 12px;
+  padding: 0;
   overflow: hidden;
   white-space: normal;
   color: #fff;
