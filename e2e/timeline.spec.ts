@@ -24,7 +24,7 @@ test('persists movie watch progress after reload', async ({ page }) => {
 })
 
 test('supports keyboard navigation and reduced motion', async ({ page }) => {
-  const track = page.getByRole('region', { name: /Timeline/ })
+  const track = page.locator('.timeline-track')
   await track.focus()
   await page.keyboard.press('ArrowRight')
   await expect(page.getByRole('button', { name: /WandaVision, 2023/ })).toHaveAttribute('aria-pressed', 'true')
