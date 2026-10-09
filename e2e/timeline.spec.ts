@@ -102,12 +102,12 @@ test('derives season and series completion from episode progress', async ({ page
 test('clears progress only after confirmation', async ({ page }) => {
   await page.getByRole('button', { name: /Iron Man, 2008/ }).click()
   await page.getByRole('button', { name: 'Mark as watched' }).click()
-  await page.getByRole('button', { name: 'Clear all progress…' }).click()
   page.once('dialog', dialog => dialog.dismiss())
+  await page.getByRole('button', { name: 'Clear all progress…' }).click()
   // The dismissed confirmation leaves existing progress intact.
   await expect(page.getByRole('button', { name: '✓ Watched' })).toBeVisible()
-  await page.getByRole('button', { name: 'Clear all progress…' }).click()
   page.once('dialog', dialog => dialog.accept())
+  await page.getByRole('button', { name: 'Clear all progress…' }).click()
   await expect(page.getByRole('button', { name: 'Mark as watched' })).toBeVisible()
   await expect(page.getByRole('button', { name: /Iron Man, 2008/ })).not.toHaveClass(/is-watched/)
 })
