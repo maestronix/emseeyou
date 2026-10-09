@@ -585,3 +585,12 @@ footer > a:last-child { margin-left: auto; }
 @media (prefers-reduced-motion: reduce) {
   .timeline-backdrop-layer { transition: none !important; }
 }
+
+
+/* Watch-progress controls and storage fallback feedback */
+.season-progress { margin-top: 22px; }
+.season-progress + .season-progress { padding-top: 18px; border-top: 1px solid var(--line-soft); }
+.progress-actions { display: flex; justify-content: flex-end; margin-top: 22px; }
+.clear-progress-button { padding: 9px 12px; border: 1px solid var(--line); border-radius: 3px; color: var(--muted); background: transparent; font-size: 11px; cursor: pointer; }
+.clear-progress-button:hover { border-color: var(--accent); color: var(--text); }
+.storage-warning { margin: 14px 0 0; padding: 12px 14px; border-left: 2px solid var(--accent-bright); color: #f0c4c4; background: var(--accent-soft); font-size: 12px; line-height: 1.6; }
