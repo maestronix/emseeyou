@@ -103,11 +103,11 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 The app is deployed, but the catalog remains sample data (Iron Man and one WandaVision episode). The intended visual reference is tracked in [issue #12](https://github.com/maestronix/emseeyou/issues/12#issuecomment-6078580032); implementation and screenshot comparison are tracked in [issue #18](https://github.com/maestronix/emseeyou/issues/18).
 
-PR #17 and PR #19's refinements are present on main, but neither established visual fidelity to the reference. A further rebuild is in progress on `fix/issue-18-mockup-rebuild`; issue #18 remains open until desktop/mobile screenshots have been compared directly with the mockup and CI plus deployment checks pass.
+PR #17 and PR #19's refinements are present on main, but neither established visual fidelity to the reference. The current rebuild replaces the slogan-led hero with a concise chronology heading, uses local title-wordmark SVGs in the timeline, and moves poster artwork into the selected-title detail view. The first two sample titles now have local starter wordmarks; their detail posters currently use TMDB-hosted preview URLs. These starter marks are not official franchise logos. Issue #18 remains open until the full catalog has appropriate logos and desktop/mobile screenshots have been compared directly with the mockup and CI plus deployment checks pass.
 
 ### Next actions
 
-1. Review the issue #18 implementation against the original mockup at desktop and mobile sizes; capture before/after screenshots and iterate on any remaining differences.
+1. Review the issue #18 implementation against the original mockup at desktop and mobile sizes; capture before/after screenshots and iterate on any remaining differences. Replace starter wordmarks with reviewed title logos and bring poster/backdrop previews into the local asset pipeline before release.
 2. Verify CI and the deployed GitHub Pages build after the visual changes merge.
 3. Finish the progress UX (season/series completion, export/import and clear-progress).
 4. Once the UI and data flow are stable, implement the TMDB maintainer importer with dry-run diffs and explicit asset provenance/rights review.
