@@ -62,6 +62,7 @@ export default function App() {
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [detailsClosing, setDetailsClosing] = useState(false)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const closeTimerRef = useRef<number | undefined>(undefined)
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const [watched, setWatched] = useState<Record<string, boolean>>(() => readProgress().movies ?? {})
   const [episodeWatched, setEpisodeWatched] = useState<Record<string, boolean>>(() => readProgress().episodes ?? {})
@@ -135,9 +136,10 @@ export default function App() {
   const closeDetails = useCallback(() => {
     if (!detailsOpen || detailsClosing) return
     setDetailsClosing(true)
-    window.setTimeout(() => {
+    closeTimerRef.current = window.setTimeout(() => {
       setDetailsOpen(false)
       setDetailsClosing(false)
+      closeTimerRef.current = undefined
     }, 360)
   }, [detailsOpen, detailsClosing])
 
@@ -201,7 +203,7 @@ export default function App() {
             const progressId = entry.demoTitle ? entry.id : title.id
             const reveal = title.type === 'movie' ? (watched[progressId] ? 100 : 0) : (titleEpisodes.length ? titleDone / titleEpisodes.length * 100 : 0)
             const isWatched = reveal === 100
-            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropForEntry(entry, index)}")` } as React.CSSProperties} onClick={() => { setSelected(entry); setDetailsClosing(false); setDetailsOpen(true) }} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
+            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropForEntry(entry, index)}")` } as React.CSSProperties} onClick={() => { if (closeTimerRef.current !== undefined) { window.clearTimeout(closeTimerRef.current); closeTimerRef.current = undefined } setSelected(entry); setDetailsClosing(false); setDetailsOpen(true) }} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
               <span className="title-art logo-only">
                 <img src={assetUrl(entry.demoLogo ?? title.assets?.logo?.path)} alt={(entry.demoTitle ?? title.title) + ' logo'} onError={markImageFallback} />
