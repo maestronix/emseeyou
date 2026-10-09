@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://maestronix.github.io/emseeyou/schema/movie.schema.json",
+  "title": "emseeyou movie",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "type", "title", "releaseDate", "tmdb", "assets"],
+  "properties": {
+    "id": {"$ref": "#/$defs/id"},
+    "type": {"const": "movie"},
+    "title": {"type": "string", "minLength": 1},
+    "releaseDate": {"type": ["string", "null"], "format": "date"},
+    "overview": {"type": "string"},
+    "tmdb": {"$ref": "#/$defs/tmdb"},
+    "assets": {"$ref": "#/$defs/assets"},
+    "manualOverrides": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "tmdb": {
+      "type": "object", "additionalProperties": false, "required": ["id", "url"],
+      "properties": {"id": {"type": ["integer", "null"], "minimum": 1}, "url": {"type": ["string", "null"], "format": "uri"}}
+    },
+    "asset": {
+      "type": "object", "additionalProperties": false, "required": ["path", "status"],
+      "properties": {
+        "path": {"type": ["string", "null"], "pattern": "^public/assets/"},
+        "status": {"enum": ["available", "missing", "optional"]},
+        "source": {"type": ["string", "null"], "format": "uri"}
+      },
+      "allOf": [{"if": {"properties": {"status": {"const": "available"}}}, "then": {"properties": {"path": {"type": "string"}}}}]
+    },
+    "assets": {
+      "type": "object", "additionalProperties": false, "required": ["poster", "backdrop", "logo"],
+      "properties": {"poster": {"$ref": "#/$defs/asset"}, "backdrop": {"$ref": "#/$defs/asset"}, "logo": {"$ref": "#/$defs/asset"}}
+    }
+  }
+}
