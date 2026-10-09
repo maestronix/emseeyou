@@ -13,8 +13,9 @@ const phases = [
 const fallback = `${import.meta.env.BASE_URL}assets/fallbacks/title-mark.svg`
 function assetUrl(path?: string | null) {
   if (!path) return fallback
-  if (/^https?:\\/\\//i.test(path)) return path
-  return import.meta.env.BASE_URL + path.replace(/^\\/+/, '')
+  if (path.startsWith('http')) return path
+  while (path.startsWith('/')) path = path.slice(1)
+  return import.meta.env.BASE_URL + path
 }
 const progressKey = 'emseeyou-progress-v1'
 
