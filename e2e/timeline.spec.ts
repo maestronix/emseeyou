@@ -72,3 +72,14 @@ test('closes details with the close button and allows selecting another story', 
   await page.getByRole('button', { name: /WandaVision, 2023/ }).click()
   await expect(page.locator('.details-section')).toContainText('WandaVision')
 })
+
+test('reveals series title artwork in proportion to episode progress', async ({ page }) => {
+  const wandaVision = page.getByRole('button', { name: /WandaVision, 2023/ })
+  await expect(wandaVision.locator('.title-art-color')).toHaveCSS('width', '0px')
+  await wandaVision.click()
+  const firstEpisode = page.locator('.episode-row input[type="checkbox"]').first()
+  await firstEpisode.check()
+  const colorReveal = wandaVision.locator('.title-art-color')
+  await expect(colorReveal).toHaveCSS('width', /.+/)
+  await expect(wandaVision).toContainText('WandaVision')
+})
