@@ -16,7 +16,9 @@ emseeyou is an unofficial, community-maintained fan project for exploring Marvel
 
 ## Status
 
-The first visual timeline prototype is under development on a feature branch. The GitHub Actions workflow builds the app; see [ROADMAP.md](ROADMAP.md) for verified progress. The catalog is bundled from version-controlled JSON and the visitor-facing app makes no TMDB/API calls.
+The visual timeline MVP is in `main`. GitHub Actions builds and deploys it to GitHub Pages on every push to `main`. See [ROADMAP.md](ROADMAP.md) for progress. The catalog is bundled from version-controlled JSON and the visitor-facing app makes no TMDB/API calls.
+
+**Website:** https://maestronix.github.io/emseeyou/ (available after the first successful Pages deployment).
 
 ## Repository layout
 
@@ -49,11 +51,13 @@ ASSET_SOURCES.md
 ROADMAP.md
 ```
 
-The structure will be introduced incrementally; folders may not all exist yet.
+The structure is introduced incrementally; folders may not all exist yet.
 
 ## Visual prototype
 
-The app uses React, TypeScript and Vite. To preview locally after cloning, run `npm install` and `npm run dev`; CI validates the production build with `npm run build`. The Vite base path is configured for GitHub Pages at `/emseeyou/`. A Pages preview requires Pages to be enabled and a deployment workflow configured; the current workflow only builds and verifies the bundle.
+The app uses React, TypeScript and Vite. To preview locally after cloning, run `npm install` and `npm run dev`. GitHub Actions runs `npm run build`, then publishes `dist/` to GitHub Pages. The Vite base path is configured for `/emseeyou/`.
+
+If the first deployment does not start, open **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**.
 
 ## Contributing
 
