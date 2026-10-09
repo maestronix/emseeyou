@@ -26,7 +26,22 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Verify production bundle
-        run: test -s dist/index.html && test -s dist/assets/*.js && test -s dist/assets/*.css
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s dist/index.html
+          compgen -G 'dist/assets/*.js' >/dev/null
+          compgen -G 'dist/assets/*.css' >/dev/null
+
+          # Vite must rewrite the source entrypoint to generated, base-prefixed assets.
+          if grep -Eq 'src="/src/main\\.tsx"|src="/src/main\\.ts"' dist/index.html; then
+            echo "::error::Production HTML still references the source entrypoint."
+            exit 1
+          fi
+          grep -Eq 'src="/emseeyou/assets/[^"]+\\.js"' dist/index.html
+          grep -Eq 'href="/emseeyou/assets/[^"]+\\.css"' dist/index.html
+          echo "Production HTML references generated assets under /emseeyou/assets/."
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
