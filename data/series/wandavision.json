@@ -8,7 +8,7 @@
   "assets": {
     "poster": {"path": null, "status": "missing", "source": null},
     "backdrop": {"path": null, "status": "optional", "source": null},
-    "logo": {"path": null, "status": "missing", "source": null}
+    "logo": {"path": "assets/logos/wandavision.svg", "status": "available", "source": "Locally authored starter SVG wordmark; not official franchise artwork"}
   },
   "seasons": [{
     "id": "wandavision-season-1",
