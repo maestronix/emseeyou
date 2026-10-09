@@ -44,3 +44,18 @@ The schema and examples will be documented under `data/README.md` and `data/sche
 ## Respectful collaboration
 
 Be kind and constructive. Discuss disagreements about chronology or canon with sources and explain uncertainty. Maintainers may request changes or decline contributions that lack reliable sourcing or have unresolved asset-rights concerns.
+
+## GitHub Actions: validation, build and preview artifact
+
+No local checkout or commands are required to validate a pull request. Every pull request targeting `main` and every push to `main` runs the **CI** workflow:
+
+- Catalog JSON Schema, ID/reference and local-asset validation.
+- Python unit tests.
+- Frontend production build; `npm run build` includes the TypeScript compiler check.
+- Static bundle smoke checks for generated HTML/JS/CSS and the sample Iron Man and WandaVision catalog entries.
+- An `emseeyou-build` artifact containing `dist/`, retained for 14 days.
+
+To inspect a run, open **Actions → CI → select the run**. Expand a failed step to read its logs. For a successful run, open **Artifacts** at the bottom of the run summary and download `emseeyou-build` to inspect the generated site. Use **Re-run jobs** on the run page to retry checks.
+
+Pull requests do not deploy to production. The separate GitHub Pages workflow deploys only after a push to `main`. Configure branch protection/rulesets to require the **Catalog validation and unit tests** and **TypeScript and production build** checks before merging. Formatting/lint checks are not configured yet because the repository has no formatter or linter dependency/configuration.
+

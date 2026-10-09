@@ -75,7 +75,7 @@ This file is the source of truth for project progress. Update checkboxes in the 
 - [ ] Add CI checks for asset file sizes and source-provenance records.
 - [x] Document asset provenance and a correction/removal process.
 - [ ] Add a “good first issue” guide for community contributors.
-- [ ] Complete the GitHub Actions workflow so all supported validation, tests and build checks run on pull requests; publish inspectable build artifacts and document the CI-only workflow.
+- [ ] Verify the unified GitHub Actions CI on a pull request: catalog validation, unit tests, TypeScript/build, production smoke checks and downloadable build artifact. Configure branch protection to require both CI jobs.
 
 ## Phase 6 — Release and maintenance
 

@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  catalog:
+    name: Catalog validation and unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements-dev.txt
+      - name: Validate schemas, references and assets
+        run: python scripts/validate_catalog.py
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+  frontend:
+    name: TypeScript and production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build (includes TypeScript type-check)
+        run: npm run build
+      - name: Smoke-test production bundle and catalog
+        run: python scripts/smoke_build.py
+      - name: Upload inspectable production build
+        uses: actions/upload-artifact@v4
+        with:
+          name: emseeyou-build
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+# Production deployment remains isolated in deploy-pages.yml and only runs on pushes to main.
+# Pull requests are built and uploaded as artifacts; they never deploy to production.
