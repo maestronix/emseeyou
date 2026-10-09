@@ -70,22 +70,22 @@ export default function App() {
   const ordered = useMemo<DisplayEntry[]>(() => {
     const seed = [...timeline.entries].sort((a, b) => a.order - b.order)
     const stories = [
-      ['Iron Man', '2008', 'https://commons.wikimedia.org/wiki/Special:FilePath/Iron_Man_-_2008_movie_logo.svg'],
-      ['Captain America: The First Avenger', '1943', 'https://commons.wikimedia.org/wiki/Special:FilePath/Captain_America_The_First_Avenger_logo.svg'],
-      ['Captain Marvel', '1995', 'https://commons.wikimedia.org/wiki/Special:FilePath/Captain_Marvel_Logo_Black.svg'],
-      ['Iron Man 2', '2010', 'https://commons.wikimedia.org/wiki/Special:FilePath/Iron_Man_2_2010_Movie_Logo.svg'],
-      ['Thor', '2011', 'https://commons.wikimedia.org/wiki/Special:FilePath/Thor_Movie_Logo_2011.svg'],
-      ['The Avengers', '2012', 'https://commons.wikimedia.org/wiki/Special:FilePath/Marvel%27s_The_Avengers_logo.svg'],
-      ['Guardians of the Galaxy', '2014', 'https://commons.wikimedia.org/wiki/Special:FilePath/Guardians_of_the_Galaxy-Logo.svg'],
-      ['Black Panther', '2016', 'https://commons.wikimedia.org/wiki/Special:FilePath/Black_Panther_Logo_Black.svg'],
-      ['Doctor Strange', '2016', 'https://commons.wikimedia.org/wiki/Special:FilePath/Doctor-Strange-logo.svg'],
-      ['Avengers: Infinity War', '2018', 'https://commons.wikimedia.org/wiki/Special:FilePath/Avengers-infinity-war-logo.svg'],
-      ['WandaVision', '2023', 'https://commons.wikimedia.org/wiki/Special:FilePath/WandaVision_wordmark_logo.svg', 'series'],
-      ['Loki', '2023', 'https://commons.wikimedia.org/wiki/Special:FilePath/Loki_TV_series_logo.svg', 'series'],
-      ['Shang-Chi and the Legend of the Ten Rings', '2024', 'https://commons.wikimedia.org/wiki/Special:FilePath/Shang_Chi_Logo.svg'],
-      ['Eternals', '2024', 'https://commons.wikimedia.org/wiki/Special:FilePath/Eternals_Logo_Dark.svg'],
-      ['Spider-Man: No Way Home', '2024', 'https://commons.wikimedia.org/wiki/Special:FilePath/Spider_Man_No_Way_Home_Logo.svg'],
-      ['Doctor Strange in the Multiverse of Madness', '2025', 'https://commons.wikimedia.org/wiki/Special:FilePath/Multiverse_Of_Madness_Logo.svg'],
+      ['Iron Man', '2008', 'public/assets/logos/iron-man.svg'],
+      ['Captain America: The First Avenger', '1943', null],
+      ['Captain Marvel', '1995', null],
+      ['Iron Man 2', '2010', null],
+      ['Thor', '2011', null],
+      ['The Avengers', '2012', null],
+      ['Guardians of the Galaxy', '2014', null],
+      ['Black Panther', '2016', null],
+      ['Doctor Strange', '2016', null],
+      ['Avengers: Infinity War', '2018', null],
+      ['WandaVision', '2023', 'public/assets/logos/wandavision.svg', 'series'],
+      ['Loki', '2023', null, 'series'],
+      ['Shang-Chi and the Legend of the Ten Rings', '2024', null],
+      ['Eternals', '2024', null],
+      ['Spider-Man: No Way Home', '2024', null],
+      ['Doctor Strange in the Multiverse of Madness', '2025', null],
     ] as const
     return stories.map(([demoTitle, year, demoLogo, demoType], index) => {
       const entry = seed[index % seed.length]
@@ -97,7 +97,7 @@ export default function App() {
         demoTitle,
         demoLogo,
         demoType: demoType ?? 'movie',
-      }
+      } as DisplayEntry
     })
   }, [])
   const selectedTitle = titleForEntry(selected)
@@ -206,7 +206,7 @@ export default function App() {
             return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropForEntry(entry, index)}")` } as React.CSSProperties} onClick={() => { if (closeTimerRef.current !== undefined) { window.clearTimeout(closeTimerRef.current); closeTimerRef.current = undefined } setSelected(entry); setDetailsClosing(false); setDetailsOpen(true) }} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
               <span className="title-art logo-only">
-                <img src={assetUrl(entry.demoLogo ?? title.assets?.logo?.path)} alt={(entry.demoTitle ?? title.title) + ' logo'} onError={markImageFallback} />
+                <img data-testid="timeline-title-art" src={assetUrl(entry.demoLogo ?? title.assets?.logo?.path)} alt={(entry.demoTitle ?? title.title) + ' logo'} onError={markImageFallback} />
               </span>
               <span className="timeline-title">{entry.demoTitle ?? title.title}</span>
               <span className="timeline-year">{entry.chronology.start ?? 'TBD'}</span>
@@ -217,7 +217,7 @@ export default function App() {
         <p className="timeline-hint">Scroll horizontally to explore <span>·</span> Select a story to see details</p>
       </section>
       {detailsOpen && <section key={selected.id} className={`details-section detail-reveal ${detailsClosing ? 'is-closing' : ''}`} id="details" aria-labelledby="detail-title" aria-live="polite" style={{ '--detail-backdrop': `url("${selectedBackdrop}")` } as React.CSSProperties}>
-        <div className="details-art"><img src={assetUrl(selectedTitle?.assets?.poster?.path ?? selectedTitle?.assets?.logo?.path)} alt="" onError={markImageFallback}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
+        <div className="details-art"><img data-testid="details-title-art" src={assetUrl(selected.demoLogo ?? selectedTitle?.assets?.poster?.path ?? selectedTitle?.assets?.logo?.path)} alt="" onError={markImageFallback}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
         <div className="details-content">
           <p className="eyebrow">STORY FILE <span className="file-number">/ {String(selected.order).padStart(2, '0')}</span></p>
           <div className="detail-title-row"><h2 id="detail-title">{selectedDisplayTitle ?? 'Unknown title'}</h2><button ref={closeButtonRef} className="detail-close" onClick={closeDetails} aria-label="Close story details">× <span>Close</span></button></div><p className="demo-notice">VISUAL TEST FIXTURE · NOT CURATED CANON DATA</p>
