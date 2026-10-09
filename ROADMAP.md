@@ -70,7 +70,7 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 - [x] Add issue forms for incorrect data/broken assets and missing movies/series/seasons/episodes.
 - [x] Add pull request checklist and initial contribution guide.
-- [x] Add visible “Report an issue” and “Contribute on GitHub” links to the site.
+- [x] Add visible repository and “Report an issue” links to the site.
 - [x] Add CI checks for catalog JSON schemas, references and asset paths.
 - [ ] Add CI checks for asset file sizes and source-provenance records.
 - [x] Document asset provenance and a correction/removal process.
@@ -104,7 +104,7 @@ The app is deployed, but the catalog is still sample data (Iron Man and one Wand
 
 ### Next actions
 
-1. Review the live UI at desktop and mobile sizes and agree on concrete visual changes before implementing them.
+1. Work through [issue #12](https://github.com/maestronix/emseeyou/issues/12): review the live UI at desktop/mobile sizes and agree on concrete visual changes before implementing them.
 2. Add automated browser smoke tests for timeline rendering, watch controls, persistence after reload, responsive layout and the production base path.
 3. Finish the progress UX (season/series completion, export/import and clear-progress).
 4. Once the UI and data flow are stable, implement the TMDB maintainer importer with dry-run diffs and explicit asset provenance/rights review.
