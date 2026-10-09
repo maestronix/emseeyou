@@ -12,6 +12,8 @@ const phases = [
   { label: 'Phase Four', year: '2021 — 2022', order: 2 },
 ]
 const fallback = `${import.meta.env.BASE_URL}assets/fallbacks/title-mark.svg`
+const backdrops = ['cityscape.svg', 'cosmic.svg', 'industrial.svg']
+function backdropUrl(index: number) { return `${import.meta.env.BASE_URL}assets/backdrops/${backdrops[index % backdrops.length]}` }
 function assetUrl(path?: string | null) {
   if (!path) return fallback
   if (path.startsWith('http')) return path
@@ -125,7 +127,7 @@ export default function App() {
             const titleDone = titleEpisodes.filter(episode => episodeWatched[episode.id]).length
             const reveal = title.type === 'movie' ? (watched[title.id] ? 100 : 0) : (titleEpisodes.length ? titleDone / titleEpisodes.length * 100 : 0)
             const isWatched = reveal === 100
-            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%` } as React.CSSProperties} onClick={() => setSelected(entry)} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
+            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropUrl(index)}")` } as React.CSSProperties} onClick={() => setSelected(entry)} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
               <span className="title-art logo-only">
                 <img src={assetUrl(entry.demoLogo ?? title.assets?.logo?.path)} alt={(entry.demoTitle ?? title.title) + ' logo'} onError={markImageFallback} />
@@ -138,7 +140,7 @@ export default function App() {
         </div>
         <p className="timeline-hint">Scroll horizontally to explore <span>·</span> Select a story to see details</p>
       </section>
-      <section className="details-section" id="details" aria-live="polite" style={selectedBackdrop ? { '--detail-backdrop': `url("${selectedBackdrop}")` } as React.CSSProperties : undefined}>
+      <section className="details-section" id="details" aria-live="polite" style={{ '--detail-backdrop': `url("${selectedBackdrop ? assetUrl(selectedBackdrop) : backdropUrl(ordered.findIndex(entry => entry.id === selected.id))}")` } as React.CSSProperties}>
         <div className="details-art"><img src={assetUrl(selectedTitle?.assets?.poster?.path ?? selectedTitle?.assets?.logo?.path)} alt="" onError={markImageFallback}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
         <div className="details-content">
           <p className="eyebrow">STORY FILE <span className="file-number">/ {String(selected.order).padStart(2, '0')}</span></p>
