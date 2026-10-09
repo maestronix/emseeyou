@@ -10,7 +10,14 @@ const phases = [
   { label: 'Phase One', year: '2008 — 2012', order: 1 },
   { label: 'Phase Four', year: '2021 — 2022', order: 2 },
 ]
-const fallback = `${import.meta.env.BASE_URL}assets/fallbacks/title-mark.svg`
+const assetUrl = (path: string) => `${import.meta.env.BASE_URL}${path}`
+const fallback = assetUrl('assets/fallbacks/title-mark.svg')
+const previewPosters: Record<string, string> = {
+  'iron-man': 'https://image.tmdb.org/t/p/w500/78lPtwv72eTNqFW9COBYI0dWDJa.jpg',
+  wandavision: 'https://image.tmdb.org/t/p/w500/glKDfE6btIRcVB5zrjspRIs4r52.jpg',
+}
+const posterFor = (title?: Title) => title?.assets?.poster?.path ? assetUrl(title.assets.poster.path) : (title ? previewPosters[title.id] ?? fallback : fallback)
+const logoFor = (title?: Title) => title?.assets?.logo?.path ? assetUrl(title.assets.logo.path) : fallback
 const progressKey = 'emseeyou-progress-v1'
 
 type SavedProgress = { movies?: Record<string, boolean>; episodes?: Record<string, boolean> }
@@ -34,7 +41,7 @@ export default function App() {
   const episodes = selectedTitle?.seasons?.flatMap(season => season.episodes) ?? []
   const doneCount = episodes.filter(episode => episodeWatched[episode.id]).length
   const seriesProgress = episodes.length ? doneCount / episodes.length : 0
-  const selectedBackdrop = selectedTitle?.assets?.backdrop?.path
+  const selectedBackdrop = selectedTitle?.assets?.backdrop?.path ? assetUrl(selectedTitle.assets.backdrop.path) : undefined
 
 
   useEffect(() => {
@@ -67,10 +74,10 @@ export default function App() {
     </header>
     <main id="top">
       <section className="intro">
-        <p className="eyebrow"><span className="eyebrow-line" /> THE MARVEL CINEMATIC UNIVERSE</p>
-        <h1>Every story.<br/><span>One timeline.</span></h1>
-        <p className="intro-copy">Travel through the MCU in in-universe chronological order.<br className="desktop-break"/> Your journey, your pace.</p>
-        <a className="scroll-cue" href="#timeline">EXPLORE THE TIMELINE <span>↓</span></a>
+        <p className="eyebrow"><span className="eyebrow-line" /> MARVEL CINEMATIC UNIVERSE</p>
+        <h1>MCU<br/><span>Chronology</span></h1>
+        <p className="intro-copy">Stories in in-universe order.</p>
+        <a className="scroll-cue" href="#timeline">VIEW TIMELINE <span>↓</span></a>
       </section>
       <section className="timeline-section" id="timeline" aria-labelledby="timeline-heading">
         <div className="section-heading"><div><p className="eyebrow">THE CHRONOLOGY</p><h2 id="timeline-heading">The timeline</h2></div><span className="entry-count">{ordered.length} STORIES · PREVIEW</span></div>
@@ -87,10 +94,8 @@ export default function App() {
             return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%` } as React.CSSProperties} onClick={() => setSelected(entry)} aria-pressed={selected.id === entry.id} aria-label={`${title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
               <span className="title-art">
-                <img className="title-art-muted" src={title.assets?.poster?.path ?? fallback} alt="" onError={markImageFallback} />
-                <img className="title-art-color" src={title.assets?.poster?.path ?? fallback} alt="" aria-hidden="true" onError={markImageFallback} />
-                {title.assets?.logo?.path && <img className="title-logo" src={title.assets.logo.path} alt="" aria-hidden="true" onError={markImageFallback} />}
-                <span className="art-shade" aria-hidden="true" />
+                <img className="title-logo title-logo-muted" src={logoFor(title)} alt="" onError={markImageFallback} />
+                <img className="title-logo title-logo-color" src={logoFor(title)} alt="" aria-hidden="true" onError={markImageFallback} />
               </span>
               <span className="timeline-title">{title.title}</span>
               <span className="timeline-year">{entry.chronology.start ?? 'TBD'}</span>
@@ -101,7 +106,7 @@ export default function App() {
         <p className="timeline-hint">Scroll horizontally to explore <span>·</span> Select a story to see details</p>
       </section>
       <section className="details-section" id="details" aria-live="polite" style={selectedBackdrop ? { '--detail-backdrop': `url("${selectedBackdrop}")` } as React.CSSProperties : undefined}>
-        <div className="details-art"><img src={selectedTitle?.assets?.poster?.path ?? fallback} alt="" onError={markImageFallback}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
+        <div className="details-art"><img src={posterFor(selectedTitle)} alt={`${selectedTitle?.title ?? "Title"} poster`} onError={markImageFallback}/><span className="art-caption">TITLE ARTWORK · TMDB</span></div>
         <div className="details-content">
           <p className="eyebrow">STORY FILE <span className="file-number">/ {String(selected.order).padStart(2, '0')}</span></p>
           <h2>{selectedTitle?.title ?? 'Unknown title'}</h2>
@@ -112,6 +117,6 @@ export default function App() {
         </div>
       </section>
     </main>
-    <footer><a className="wordmark footer-mark" href="#top">em<span>see</span>you<span className="wordmark-dot">.</span></a><p>AN UNOFFICIAL MCU FAN PROJECT · NOT AFFILIATED WITH MARVEL OR DISNEY</p><a href="https://github.com/maestronix/emseeyou/issues" target="_blank" rel="noreferrer">REPORT AN ISSUE ↗</a></footer>
+    <footer><a className="wordmark footer-mark" href="#top">em<span>see</span>you<span className="wordmark-dot">.</span></a><p>UNOFFICIAL FAN PROJECT · ARTWORK PREVIEWS VIA TMDB · NOT AFFILIATED WITH MARVEL OR DISNEY</p><a href="https://github.com/maestronix/emseeyou/issues" target="_blank" rel="noreferrer">REPORT AN ISSUE ↗</a></footer>
   </div>
 }
