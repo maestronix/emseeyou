@@ -35,7 +35,6 @@ export default function App() {
   const doneCount = episodes.filter(episode => episodeWatched[episode.id]).length
   const seriesProgress = episodes.length ? doneCount / episodes.length : 0
   const selectedBackdrop = selectedTitle?.assets?.backdrop?.path
-  const progress = selectedTitle?.type === 'series' ? seriesProgress : (watched[selectedTitle?.id ?? ''] ? 1 : 0)
 
   useEffect(() => {
     const saved = readProgress()
