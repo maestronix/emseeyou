@@ -26,8 +26,8 @@ function readProgress(): SavedProgress {
 
 export default function App() {
   const [selected, setSelected] = useState<Entry>(timeline.entries[0])
-  const [watched, setWatched] = useState<Record<string, boolean>>({})
-  const [episodeWatched, setEpisodeWatched] = useState<Record<string, boolean>>({})
+  const [watched, setWatched] = useState<Record<string, boolean>>(() => readProgress().movies ?? {})
+  const [episodeWatched, setEpisodeWatched] = useState<Record<string, boolean>>(() => readProgress().episodes ?? {})
   const trackRef = useRef<HTMLDivElement>(null)
   const ordered = useMemo(() => [...timeline.entries].sort((a, b) => a.order - b.order), [])
   const selectedTitle = titles[selected.target.type === 'episode' ? selected.target.seriesId! : selected.target.id]
@@ -36,11 +36,6 @@ export default function App() {
   const seriesProgress = episodes.length ? doneCount / episodes.length : 0
   const selectedBackdrop = selectedTitle?.assets?.backdrop?.path
 
-  useEffect(() => {
-    const saved = readProgress()
-    setWatched(saved.movies ?? {})
-    setEpisodeWatched(saved.episodes ?? {})
-  }, [])
 
   useEffect(() => {
     try {
