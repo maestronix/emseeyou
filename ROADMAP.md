@@ -30,14 +30,14 @@ This file is the source of truth for project progress. Update checkboxes in the 
 
 ## Phase 2 — Visual prototype
 
-- [ ] Set up React, TypeScript and Vite.
-- [ ] Create the responsive application shell and minimal header/footer.
-- [ ] Implement the continuous horizontal timeline with subtle phase dividers.
-- [ ] Render title logos in grayscale for unwatched items and color for completed items.
+- [x] Set up React, TypeScript and Vite with a GitHub Actions production-build check.
+- [x] Create the responsive application shell and minimal header/footer.
+- [x] Implement a continuous horizontal timeline with phase labels and selectable story entries.
+- [x] Render title artwork in grayscale by default and color for selected/watched entries.
 - [ ] Implement proportional logo color reveal for partially watched series.
 - [ ] Implement blended, darkened local poster/backdrop backgrounds.
-- [ ] Add loading, missing-image and reduced-motion fallbacks.
-- [ ] Test desktop, tablet and mobile scrolling and keyboard accessibility.
+- [x] Add a local missing-artwork fallback and reduced-motion support.
+- [x] Add horizontal keyboard navigation and responsive desktop/mobile layouts; automated visual browser checks remain open.
 
 ## Phase 3 — Watch progress
 
