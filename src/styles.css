@@ -533,3 +533,36 @@ footer > a:last-child { margin-left: auto; }
 @media (prefers-reduced-motion: reduce) {
   .detail-reveal, .detail-reveal.is-closing { animation: none !important; }
 }
+
+
+/* Issue #39: cross-fade locally bundled cinematic timeline backdrops. */
+.timeline-section {
+  isolation: isolate;
+  background: linear-gradient(180deg, #111113, #171618 52%, #111113);
+}
+.timeline-backdrop-layer {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.8s ease-in-out;
+}
+.timeline-backdrop-layer.is-active { opacity: .36; }
+.timeline-section::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  content: '';
+  background: linear-gradient(180deg, #111113e8, #171618c9 48%, #111113eb);
+  pointer-events: none;
+}
+.timeline-section > :not(.timeline-backdrop-layer) {
+  position: relative;
+  z-index: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .timeline-backdrop-layer { transition: none !important; }
+}
