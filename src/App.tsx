@@ -25,6 +25,17 @@ const phases = [
 const fallback = `${import.meta.env.BASE_URL}assets/fallbacks/title-mark.svg`
 const backdrops = ['cityscape.svg', 'cosmic.svg', 'industrial.svg']
 function backdropUrl(index: number) { return `${import.meta.env.BASE_URL}assets/backdrops/${backdrops[index % backdrops.length]}` }
+function backdropForEntry(entry: DisplayEntry, index: number) {
+  const title = (entry.demoTitle ?? titleForEntry(entry)?.title ?? '').toLowerCase()
+  const cosmicStories = ['captain marvel', 'guardians of the galaxy', 'doctor strange', 'eternals', 'multiverse of madness']
+  const industrialStories = ['iron man', 'shang-chi']
+  const backdrop = cosmicStories.some(name => title.includes(name))
+    ? 'cosmic.svg'
+    : industrialStories.some(name => title.includes(name))
+      ? 'industrial.svg'
+      : null
+  return backdrop ? `${import.meta.env.BASE_URL}assets/backdrops/${backdrop}` : backdropUrl(index)
+}
 function assetUrl(path?: string | null) {
   if (!path) return fallback
   if (path.startsWith('http')) return path
@@ -93,7 +104,7 @@ export default function App() {
   const episodes = selectedTitle?.seasons?.flatMap(season => season.episodes) ?? []
   const doneCount = episodes.filter(episode => episodeWatched[episode.id]).length
   const seriesProgress = episodes.length ? doneCount / episodes.length : 0
-  const selectedBackdrop = selectedTitle?.assets?.backdrop?.path
+  const selectedBackdrop = selectedTitle?.assets?.backdrop?.path ? assetUrl(selectedTitle.assets.backdrop.path) : backdropForEntry(selected, ordered.findIndex(entry => entry.id === selected.id))
 
 
   useEffect(() => {
@@ -172,7 +183,7 @@ export default function App() {
             const progressId = entry.demoTitle ? entry.id : title.id
             const reveal = title.type === 'movie' ? (watched[progressId] ? 100 : 0) : (titleEpisodes.length ? titleDone / titleEpisodes.length * 100 : 0)
             const isWatched = reveal === 100
-            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropUrl(index)}")` } as React.CSSProperties} onClick={() => { setSelected(entry); setDetailsClosing(false); setDetailsOpen(true) }} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
+            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropForEntry(entry, index)}")` } as React.CSSProperties} onClick={() => { setSelected(entry); setDetailsClosing(false); setDetailsOpen(true) }} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
               <span className="title-art logo-only">
                 <img src={assetUrl(entry.demoLogo ?? title.assets?.logo?.path)} alt={(entry.demoTitle ?? title.title) + ' logo'} onError={markImageFallback} />
@@ -185,7 +196,7 @@ export default function App() {
         </div>
         <p className="timeline-hint">Scroll horizontally to explore <span>·</span> Select a story to see details</p>
       </section>
-      {detailsOpen && <section className={`details-section detail-reveal ${detailsClosing ? 'is-closing' : ''}`} id="details" aria-labelledby="detail-title" aria-live="polite" style={{ '--detail-backdrop': `url("${selectedBackdrop ? assetUrl(selectedBackdrop) : backdropUrl(ordered.findIndex(entry => entry.id === selected.id))}")` } as React.CSSProperties}>
+      {detailsOpen && <section key={selected.id} className={`details-section detail-reveal ${detailsClosing ? 'is-closing' : ''}`} id="details" aria-labelledby="detail-title" aria-live="polite" style={{ '--detail-backdrop': `url("${selectedBackdrop}")` } as React.CSSProperties}>
         <div className="details-art"><img src={assetUrl(selectedTitle?.assets?.poster?.path ?? selectedTitle?.assets?.logo?.path)} alt="" onError={markImageFallback}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
         <div className="details-content">
           <p className="eyebrow">STORY FILE <span className="file-number">/ {String(selected.order).padStart(2, '0')}</span></p>
