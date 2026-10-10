@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import timeline from '../data/timeline.json'
 import ironMan from '../data/movies/iron-man.json'
 import wandaVision from '../data/series/wandavision.json'
@@ -71,6 +71,10 @@ export default function App() {
   const [timelineBackdrops, setTimelineBackdrops] = useState({ images: [0, 1], active: 0 })
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [detailsClosing, setDetailsClosing] = useState(false)
+  const [splitY, setSplitY] = useState(() => Math.round(window.innerHeight / 2))
+  const topShutterContentRef = useRef<HTMLDivElement>(null)
+  const bottomShutterContentRef = useRef<HTMLDivElement>(null)
+  const transitionSnapshotRef = useRef<HTMLElement | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const closeTimerRef = useRef<number | undefined>(undefined)
   const previousFocusRef = useRef<HTMLElement | null>(null)
@@ -154,6 +158,23 @@ export default function App() {
   }
 
 
+  function openDetails(entry: DisplayEntry) {
+    const appShell = document.querySelector('.app-shell')
+    transitionSnapshotRef.current = appShell instanceof HTMLElement ? appShell.cloneNode(true) as HTMLElement : null
+    const timelineLine = document.querySelector('.timeline-line')
+    if (timelineLine) {
+      const rect = timelineLine.getBoundingClientRect()
+      setSplitY(Math.round(Math.max(24, Math.min(window.innerHeight - 24, rect.top + rect.height / 2))))
+    }
+    if (closeTimerRef.current !== undefined) {
+      window.clearTimeout(closeTimerRef.current)
+      closeTimerRef.current = undefined
+    }
+    setSelected(entry)
+    setDetailsClosing(false)
+    setDetailsOpen(true)
+  }
+
   const closeDetails = useCallback(() => {
     if (!detailsOpen || detailsClosing) return
     setDetailsClosing(true)
@@ -161,7 +182,7 @@ export default function App() {
       setDetailsOpen(false)
       setDetailsClosing(false)
       closeTimerRef.current = undefined
-    }, 360)
+    }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 360)
   }, [detailsOpen, detailsClosing])
 
   useEffect(() => {
@@ -180,6 +201,32 @@ export default function App() {
       previousFocusRef.current?.focus()
     }
   }, [detailsOpen, closeDetails])
+
+  useLayoutEffect(() => {
+    if (!detailsOpen) return
+    const previousOverflow = document.body.style.overflow
+    const scrollTop = window.scrollY
+    document.body.style.overflow = 'hidden'
+
+    const snapshot = transitionSnapshotRef.current
+    const topContainer = topShutterContentRef.current
+    const bottomContainer = bottomShutterContentRef.current
+    if (snapshot && topContainer && bottomContainer) {
+      const topClone = snapshot.cloneNode(true) as HTMLElement
+      const bottomClone = snapshot.cloneNode(true) as HTMLElement
+      Object.assign(topClone.style, { position: 'absolute', left: '0', top: `-${scrollTop}px`, width: '100%', pointerEvents: 'none' })
+      Object.assign(bottomClone.style, { position: 'absolute', left: '0', top: `-${scrollTop + splitY}px`, width: '100%', pointerEvents: 'none' })
+      topContainer.replaceChildren(topClone)
+      bottomContainer.replaceChildren(bottomClone)
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      topShutterContentRef.current?.replaceChildren()
+      bottomShutterContentRef.current?.replaceChildren()
+      transitionSnapshotRef.current = null
+    }
+  }, [detailsOpen])
 
   function moveFocus(direction: number) {
     const selectedIndex = ordered.findIndex(entry => entry.id === selected.id)
@@ -209,7 +256,7 @@ export default function App() {
         <p className="intro-copy">Stories in in-universe order.</p>
         <a className="scroll-cue" href="#timeline">VIEW TIMELINE <span>↓</span></a>
       </section>
-      <section className="timeline-section" id="timeline" aria-labelledby="timeline-heading">
+      <section className={`timeline-section ${detailsOpen ? 'details-open' : ''}`} id="timeline" aria-labelledby="timeline-heading">
         <div className={`timeline-backdrop-layer ${timelineBackdrops.active === 0 ? 'is-active' : ''}`} style={{ backgroundImage: `url("${backdropUrl(timelineBackdrops.images[0])}")` }} aria-hidden="true" />
         <div className={`timeline-backdrop-layer ${timelineBackdrops.active === 1 ? 'is-active' : ''}`} style={{ backgroundImage: `url("${backdropUrl(timelineBackdrops.images[1])}")` }} aria-hidden="true" />
         <div className="section-heading"><div><p className="eyebrow">THE CHRONOLOGY</p><h2 id="timeline-heading">The timeline</h2></div><span className="entry-count">{ordered.length} STORIES · DEMO DATA</span></div>
@@ -224,7 +271,7 @@ export default function App() {
             const progressId = entry.demoTitle ? entry.id : title.id
             const reveal = title.type === 'movie' ? (watched[progressId] ? 100 : 0) : (titleEpisodes.length ? titleDone / titleEpisodes.length * 100 : 0)
             const isWatched = reveal === 100
-            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropForEntry(entry, index)}")` } as React.CSSProperties} onClick={() => { if (closeTimerRef.current !== undefined) { window.clearTimeout(closeTimerRef.current); closeTimerRef.current = undefined } setSelected(entry); setDetailsClosing(false); setDetailsOpen(true) }} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
+            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropForEntry(entry, index)}")` } as React.CSSProperties} onClick={() => openDetails(entry)} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
               <span className="title-art logo-only" data-testid="timeline-title-art" aria-label={(entry.demoTitle ?? title.title) + ' title artwork'}>
                 <span className="title-art-base">{entry.demoTitle ?? title.title}</span>
@@ -263,6 +310,10 @@ export default function App() {
           {!storageAvailable && <p className="storage-warning" role="status">Browser storage is unavailable. Progress works for this session only and will be lost when you reload or close this page.</p>}
         </div>
       </section>}
+      {detailsOpen && <>
+        <div className={`detail-shutter detail-shutter-top ${detailsClosing ? 'is-closing' : ''}`} style={{ '--split-y': `${splitY}px` } as React.CSSProperties} aria-hidden="true"><div className="detail-shutter-content" ref={topShutterContentRef} /></div>
+        <div className={`detail-shutter detail-shutter-bottom ${detailsClosing ? 'is-closing' : ''}`} style={{ '--split-y': `${splitY}px` } as React.CSSProperties} aria-hidden="true"><div className="detail-shutter-content" ref={bottomShutterContentRef} /></div>
+      </>}
       </section>
 
     </main>
