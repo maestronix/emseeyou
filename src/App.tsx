@@ -256,7 +256,7 @@ export default function App() {
         <p className="intro-copy">Stories in in-universe order.</p>
         <a className="scroll-cue" href="#timeline">VIEW TIMELINE <span>↓</span></a>
       </section>
-      <section className="timeline-section" id="timeline" aria-labelledby="timeline-heading">
+      <section className={`timeline-section ${detailsOpen ? 'details-open' : ''}`} id="timeline" aria-labelledby="timeline-heading">
         <div className={`timeline-backdrop-layer ${timelineBackdrops.active === 0 ? 'is-active' : ''}`} style={{ backgroundImage: `url("${backdropUrl(timelineBackdrops.images[0])}")` }} aria-hidden="true" />
         <div className={`timeline-backdrop-layer ${timelineBackdrops.active === 1 ? 'is-active' : ''}`} style={{ backgroundImage: `url("${backdropUrl(timelineBackdrops.images[1])}")` }} aria-hidden="true" />
         <div className="section-heading"><div><p className="eyebrow">THE CHRONOLOGY</p><h2 id="timeline-heading">The timeline</h2></div><span className="entry-count">{ordered.length} STORIES · DEMO DATA</span></div>
