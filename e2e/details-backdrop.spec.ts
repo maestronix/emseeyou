@@ -6,7 +6,7 @@ test('details use the selected story backdrop and reveal as a split-screen page'
 
   const details = page.locator('#details')
   await expect(details).toBeVisible()
-  await expect(details).toHaveCSS('--detail-backdrop', /cosmic\\.svg/)
+  await expect(details).toHaveCSS('--detail-backdrop', /cosmic\.svg/)
   await expect(details).toHaveCSS('position', 'fixed')
   await expect(details).toHaveCSS('top', '0px')
   await expect(details).toHaveCSS('left', '0px')
@@ -24,5 +24,5 @@ test('details use the selected story backdrop and reveal as a split-screen page'
   await expect(details).toBeHidden()
 
   await page.getByRole('button', { name: /Iron Man, 2008/i }).click()
-  await expect(page.locator('#details')).toHaveCSS('--detail-backdrop', /industrial\\.svg/)
+  await expect(page.locator('#details')).toHaveCSS('--detail-backdrop', /industrial\.svg/)
 })
