@@ -10,6 +10,8 @@ test('details background follows the selected story and changes on selection', a
 
   await page.screenshot({ fullPage: true })
 
-  await page.getByRole('button', { name: /Iron Man/i }).first().click()
+  // The centered details panel covers part of the timeline; use its supported keyboard navigation.
+  await page.locator('.timeline-track').press('ArrowLeft')
+  await page.locator('.timeline-track').press('ArrowLeft')
   await expect(page.locator('#details')).toHaveCSS('--detail-backdrop', /industrial\.svg/)
 })

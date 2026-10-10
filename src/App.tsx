@@ -237,7 +237,6 @@ export default function App() {
           })}
         </div>
         <p className="timeline-hint">Scroll horizontally to explore <span>·</span> Select a story to see details</p>
-      </section>
       {detailsOpen && <section key={selected.id} className={`details-section detail-reveal ${detailsClosing ? 'is-closing' : ''}`} id="details" aria-labelledby="detail-title" aria-live="polite" style={{ '--detail-backdrop': `url("${selectedBackdrop}")` } as React.CSSProperties}>
         <div className="details-art"><img data-testid="details-title-art" src={assetUrl(selected.demoLogo ?? selectedTitle?.assets?.poster?.path ?? selectedTitle?.assets?.logo?.path)} alt="" onError={markImageFallback}/><span className="art-caption">YOUR MCU JOURNEY</span></div>
         <div className="details-content">
@@ -264,6 +263,8 @@ export default function App() {
           {!storageAvailable && <p className="storage-warning" role="status">Browser storage is unavailable. Progress works for this session only and will be lost when you reload or close this page.</p>}
         </div>
       </section>}
+      </section>
+
     </main>
     <footer><a className="wordmark footer-mark" href="#top">em<span>see</span>you<span className="wordmark-dot">.</span></a><p>AN UNOFFICIAL MCU FAN PROJECT · NOT AFFILIATED WITH MARVEL OR DISNEY</p><a href="https://github.com/maestronix/emseeyou/issues" target="_blank" rel="noreferrer">REPORT AN ISSUE ↗</a></footer>
   </div>
