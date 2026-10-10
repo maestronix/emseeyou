@@ -597,6 +597,7 @@ footer > a:last-child { margin-left: auto; }
 
 
 /* Issue #57: full-screen story view revealed by splitting at the timeline line. */
+.timeline-section > .detail-shutter { position: fixed; z-index: 110; }
 .details-section.detail-reveal {
   position: fixed;
   z-index: 100;
