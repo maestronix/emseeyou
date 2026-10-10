@@ -596,55 +596,5 @@ footer > a:last-child { margin-left: auto; }
 .storage-warning { margin: 14px 0 0; padding: 12px 14px; border-left: 2px solid var(--accent-bright); color: #f0c4c4; background: var(--accent-soft); font-size: 12px; line-height: 1.6; }
 
 
-/* Issue #57: overlay story details within the timeline instead of document flow. */
-.timeline-section { position: relative; }
-.details-section.detail-reveal {
-  position: absolute;
-  z-index: 5;
-  top: 50%;
-  left: 50%;
-  width: min(1100px, calc(100% - 48px));
-  max-height: min(82vh, 900px);
-  overflow: auto;
-  margin: 0;
-  padding: 42px clamp(24px, 5vw, 72px);
-  transform: translate(-50%, -50%);
-  transform-origin: center;
-  border: 1px solid #ffffff24;
-  box-shadow: 0 24px 100px #000c;
-  animation: detail-overlay-reveal .42s cubic-bezier(.2,.75,.25,1) both;
-  /* Keep timeline entries clickable through unused space in the overlay. */
-  pointer-events: none;
-}
-.details-section.detail-reveal > * { pointer-events: auto; }
-.details-section.detail-reveal.is-closing {
-  animation: detail-overlay-hide .36s ease both;
-  pointer-events: none;
-}
-@keyframes detail-overlay-reveal {
-  from { opacity: 0; clip-path: inset(0 50% 0 50%); transform: translate(-50%, -50%) scale(.99); }
-  to { opacity: 1; clip-path: inset(0 0 0 0); transform: translate(-50%, -50%) scale(1); }
-}
-@keyframes detail-overlay-hide {
-  from { opacity: 1; clip-path: inset(0 0 0 0); transform: translate(-50%, -50%) scale(1); }
-  to { opacity: 0; clip-path: inset(0 50% 0 50%); transform: translate(-50%, -50%) scale(.99); }
-}
-@media (max-width: 650px) {
-  .details-section.detail-reveal {
-    width: calc(100% - 24px);
-    max-height: 86vh;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
-    padding: 28px 6% 32px;
-  }
-  .details-section.detail-reveal .details-art {
-    min-height: 0;
-    max-height: 170px;
-    aspect-ratio: 16 / 9;
-  }
-  .details-section.detail-reveal .details-art img { max-height: 155px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .details-section.detail-reveal,
-  .details-section.detail-reveal.is-closing { animation: none !important; }
-}
+/* Issue #57: keep the animated details panel in normal document flow. */
+.details-section.detail-reveal { position: relative; width: 100%; }
