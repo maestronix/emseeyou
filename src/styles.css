@@ -636,10 +636,16 @@ footer > a:last-child { margin-left: auto; }
   right: 0;
   left: 0;
   height: var(--split-y);
+  overflow: hidden;
   pointer-events: none;
-  background:
-    linear-gradient(180deg, #101012 0%, #171619 65%, #101012 100%);
+  background: #101012;
   will-change: transform;
+}
+.detail-shutter-content {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
 }
 .detail-shutter-top {
   top: 0;
