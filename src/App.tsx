@@ -182,7 +182,7 @@ export default function App() {
       setDetailsOpen(false)
       setDetailsClosing(false)
       closeTimerRef.current = undefined
-    }, 360)
+    }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 360)
   }, [detailsOpen, detailsClosing])
 
   useEffect(() => {
