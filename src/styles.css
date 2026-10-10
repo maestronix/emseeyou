@@ -698,3 +698,25 @@ footer > a:last-child { margin-left: auto; }
   .detail-shutter-top.is-closing,
   .detail-shutter-bottom.is-closing { transform: translateY(0); animation: none !important; }
 }
+
+
+/* Issue #45: browser-local watch progress backup controls. */
+.transfer-progress-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 11px;
+  cursor: pointer;
+}
+.transfer-progress-button:hover { border-color: var(--accent); color: var(--text); }
+.import-progress-button input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+.import-progress-button:focus-within { outline: 2px solid var(--accent-bright); outline-offset: 3px; }
+.progress-actions { flex-wrap: wrap; gap: 8px; }
+@media (max-width: 650px) {
+  .progress-actions { justify-content: flex-start; }
+}
