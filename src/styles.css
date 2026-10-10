@@ -596,5 +596,98 @@ footer > a:last-child { margin-left: auto; }
 .storage-warning { margin: 14px 0 0; padding: 12px 14px; border-left: 2px solid var(--accent-bright); color: #f0c4c4; background: var(--accent-soft); font-size: 12px; line-height: 1.6; }
 
 
-/* Issue #57: keep the animated details panel in normal document flow. */
-.details-section.detail-reveal { position: relative; width: 100%; }
+/* Issue #57: full-screen story view revealed by splitting at the timeline line. */
+.details-section.detail-reveal {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  max-height: none;
+  grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
+  align-items: center;
+  align-content: start;
+  gap: clamp(30px, 7vw, 90px);
+  margin: 0;
+  padding: clamp(28px, 6vh, 72px) clamp(24px, 7vw, 120px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 0;
+  border-top: 0;
+  box-shadow: none;
+  transform: none;
+  clip-path: none;
+  animation: none;
+  scroll-margin-top: 0;
+}
+.details-section.detail-reveal.is-closing { animation: none; }
+.details-section.detail-reveal .details-art {
+  width: 100%;
+  max-height: min(64vh, 560px);
+  min-height: 0;
+}
+.details-section.detail-reveal .details-content { align-self: center; }
+.detail-shutter {
+  position: fixed;
+  z-index: 110;
+  right: 0;
+  left: 0;
+  height: var(--split-y);
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, #101012 0%, #171619 65%, #101012 100%);
+  will-change: transform;
+}
+.detail-shutter-top {
+  top: 0;
+  height: var(--split-y);
+  border-bottom: 1px solid #ffffff18;
+  animation: split-open-top .68s cubic-bezier(.76, 0, .24, 1) both;
+}
+.detail-shutter-bottom {
+  top: var(--split-y);
+  bottom: 0;
+  height: auto;
+  border-top: 1px solid #ffffff18;
+  animation: split-open-bottom .68s cubic-bezier(.76, 0, .24, 1) both;
+}
+.detail-shutter-top.is-closing { animation: split-close-top .36s cubic-bezier(.76, 0, .24, 1) both; }
+.detail-shutter-bottom.is-closing { animation: split-close-bottom .36s cubic-bezier(.76, 0, .24, 1) both; }
+@keyframes split-open-top {
+  from { transform: translateY(0); }
+  to { transform: translateY(-101%); }
+}
+@keyframes split-open-bottom {
+  from { transform: translateY(0); }
+  to { transform: translateY(101%); }
+}
+@keyframes split-close-top {
+  from { transform: translateY(-101%); }
+  to { transform: translateY(0); }
+}
+@keyframes split-close-bottom {
+  from { transform: translateY(101%); }
+  to { transform: translateY(0); }
+}
+@media (max-width: 650px) {
+  .details-section.detail-reveal {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    align-content: start;
+    padding: 28px 6% 40px;
+  }
+  .details-section.detail-reveal .details-art {
+    width: 100%;
+    max-height: 190px;
+    aspect-ratio: 16 / 9;
+  }
+  .details-section.detail-reveal .details-art img { max-height: 175px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .detail-shutter-top { transform: translateY(-101%); animation: none !important; }
+  .detail-shutter-bottom { transform: translateY(101%); animation: none !important; }
+  .detail-shutter-top.is-closing,
+  .detail-shutter-bottom.is-closing { transform: translateY(0); animation: none !important; }
+}
