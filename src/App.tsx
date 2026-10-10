@@ -71,6 +71,7 @@ export default function App() {
   const [timelineBackdrops, setTimelineBackdrops] = useState({ images: [0, 1], active: 0 })
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [detailsClosing, setDetailsClosing] = useState(false)
+  const [splitY, setSplitY] = useState(() => Math.round(window.innerHeight / 2))
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const closeTimerRef = useRef<number | undefined>(undefined)
   const previousFocusRef = useRef<HTMLElement | null>(null)
@@ -154,6 +155,21 @@ export default function App() {
   }
 
 
+  function openDetails(entry: DisplayEntry) {
+    const timelineLine = document.querySelector('.timeline-line')
+    if (timelineLine) {
+      const rect = timelineLine.getBoundingClientRect()
+      setSplitY(Math.round(Math.max(24, Math.min(window.innerHeight - 24, rect.top + rect.height / 2))))
+    }
+    if (closeTimerRef.current !== undefined) {
+      window.clearTimeout(closeTimerRef.current)
+      closeTimerRef.current = undefined
+    }
+    setSelected(entry)
+    setDetailsClosing(false)
+    setDetailsOpen(true)
+  }
+
   const closeDetails = useCallback(() => {
     if (!detailsOpen || detailsClosing) return
     setDetailsClosing(true)
@@ -167,6 +183,8 @@ export default function App() {
   useEffect(() => {
     if (!detailsOpen) return
     previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     closeButtonRef.current?.focus()
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
@@ -177,6 +195,7 @@ export default function App() {
     window.addEventListener('keydown', onKeyDown)
     return () => {
       window.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = previousOverflow
       previousFocusRef.current?.focus()
     }
   }, [detailsOpen, closeDetails])
@@ -224,7 +243,7 @@ export default function App() {
             const progressId = entry.demoTitle ? entry.id : title.id
             const reveal = title.type === 'movie' ? (watched[progressId] ? 100 : 0) : (titleEpisodes.length ? titleDone / titleEpisodes.length * 100 : 0)
             const isWatched = reveal === 100
-            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropForEntry(entry, index)}")` } as React.CSSProperties} onClick={() => { if (closeTimerRef.current !== undefined) { window.clearTimeout(closeTimerRef.current); closeTimerRef.current = undefined } setSelected(entry); setDetailsClosing(false); setDetailsOpen(true) }} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
+            return <button key={entry.id} data-entry className={`timeline-item ${selected.id === entry.id ? 'selected' : ''} ${isWatched ? 'is-watched' : ''}`} style={{ '--item-index': index, '--color-reveal': `${reveal}%`, '--item-backdrop': `url("${backdropForEntry(entry, index)}")` } as React.CSSProperties} onClick={() => openDetails(entry)} aria-pressed={selected.id === entry.id} aria-label={`${entry.demoTitle ?? title.title}, ${entry.chronology.start ?? 'date unknown'}`}>
               <span className="timeline-node"><span /></span>
               <span className="title-art logo-only" data-testid="timeline-title-art" aria-label={(entry.demoTitle ?? title.title) + ' title artwork'}>
                 <span className="title-art-base">{entry.demoTitle ?? title.title}</span>
@@ -263,6 +282,10 @@ export default function App() {
           {!storageAvailable && <p className="storage-warning" role="status">Browser storage is unavailable. Progress works for this session only and will be lost when you reload or close this page.</p>}
         </div>
       </section>}
+      {detailsOpen && <>
+        <div className={`detail-shutter detail-shutter-top ${detailsClosing ? 'is-closing' : ''}`} style={{ '--split-y': `${splitY}px` } as React.CSSProperties} aria-hidden="true" />
+        <div className={`detail-shutter detail-shutter-bottom ${detailsClosing ? 'is-closing' : ''}`} style={{ '--split-y': `${splitY}px` } as React.CSSProperties} aria-hidden="true" />
+      </>}
       </section>
 
     </main>
