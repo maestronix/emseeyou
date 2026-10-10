@@ -13,6 +13,8 @@ test('details use the selected story backdrop and reveal as a split-screen page'
   await expect(details).toHaveCSS('width', `${await page.evaluate(() => window.innerWidth)}px`)
   await expect(page.locator('.detail-shutter-top')).toBeVisible()
   await expect(page.locator('.detail-shutter-bottom')).toBeVisible()
+  await expect(page.locator('.detail-shutter-top .timeline-line')).toBeAttached()
+  await expect(page.locator('.detail-shutter-bottom .timeline-line')).toBeAttached()
   await expect(page.locator('.detail-shutter-top')).toHaveCSS('animation-name', 'split-open-top')
   await expect(page.locator('.detail-shutter-bottom')).toHaveCSS('animation-name', 'split-open-bottom')
 
