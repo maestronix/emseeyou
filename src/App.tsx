@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import timeline from '../data/timeline.json'
 import ironMan from '../data/movies/iron-man.json'
 import wandaVision from '../data/series/wandavision.json'
@@ -72,6 +72,9 @@ export default function App() {
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [detailsClosing, setDetailsClosing] = useState(false)
   const [splitY, setSplitY] = useState(() => Math.round(window.innerHeight / 2))
+  const topShutterContentRef = useRef<HTMLDivElement>(null)
+  const bottomShutterContentRef = useRef<HTMLDivElement>(null)
+  const transitionSnapshotRef = useRef<HTMLElement | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const closeTimerRef = useRef<number | undefined>(undefined)
   const previousFocusRef = useRef<HTMLElement | null>(null)
@@ -156,6 +159,8 @@ export default function App() {
 
 
   function openDetails(entry: DisplayEntry) {
+    const appShell = document.querySelector('.app-shell')
+    transitionSnapshotRef.current = appShell instanceof HTMLElement ? appShell.cloneNode(true) as HTMLElement : null
     const timelineLine = document.querySelector('.timeline-line')
     if (timelineLine) {
       const rect = timelineLine.getBoundingClientRect()
@@ -197,11 +202,30 @@ export default function App() {
     }
   }, [detailsOpen, closeDetails])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!detailsOpen) return
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = previousOverflow }
+
+    const snapshot = transitionSnapshotRef.current
+    const topContainer = topShutterContentRef.current
+    const bottomContainer = bottomShutterContentRef.current
+    if (snapshot && topContainer && bottomContainer) {
+      const topClone = snapshot.cloneNode(true) as HTMLElement
+      const bottomClone = snapshot.cloneNode(true) as HTMLElement
+      const scrollTop = window.scrollY
+      Object.assign(topClone.style, { position: 'absolute', left: '0', top: `-${scrollTop}px`, width: '100%', pointerEvents: 'none' })
+      Object.assign(bottomClone.style, { position: 'absolute', left: '0', top: `-${scrollTop + splitY}px`, width: '100%', pointerEvents: 'none' })
+      topContainer.replaceChildren(topClone)
+      bottomContainer.replaceChildren(bottomClone)
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      topShutterContentRef.current?.replaceChildren()
+      bottomShutterContentRef.current?.replaceChildren()
+      transitionSnapshotRef.current = null
+    }
   }, [detailsOpen])
 
   function moveFocus(direction: number) {
@@ -287,8 +311,8 @@ export default function App() {
         </div>
       </section>}
       {detailsOpen && <>
-        <div className={`detail-shutter detail-shutter-top ${detailsClosing ? 'is-closing' : ''}`} style={{ '--split-y': `${splitY}px` } as React.CSSProperties} aria-hidden="true" />
-        <div className={`detail-shutter detail-shutter-bottom ${detailsClosing ? 'is-closing' : ''}`} style={{ '--split-y': `${splitY}px` } as React.CSSProperties} aria-hidden="true" />
+        <div className={`detail-shutter detail-shutter-top ${detailsClosing ? 'is-closing' : ''}`} style={{ '--split-y': `${splitY}px` } as React.CSSProperties} aria-hidden="true"><div className="detail-shutter-content" ref={topShutterContentRef} /></div>
+        <div className={`detail-shutter detail-shutter-bottom ${detailsClosing ? 'is-closing' : ''}`} style={{ '--split-y': `${splitY}px` } as React.CSSProperties} aria-hidden="true"><div className="detail-shutter-content" ref={bottomShutterContentRef} /></div>
       </>}
       </section>
 
