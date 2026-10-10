@@ -157,6 +157,49 @@ export default function App() {
     setEpisodeWatched({})
   }
 
+  function exportProgress() {
+    const backup = {
+      schemaVersion: 1,
+      exportedAt: new Date().toISOString(),
+      movies: watched,
+      episodes: episodeWatched,
+    }
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'emseeyou-progress.json'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  async function importProgress(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.currentTarget.files?.[0]
+    event.currentTarget.value = ''
+    if (!file) return
+    try {
+      const parsed: unknown = JSON.parse(await file.text())
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('Backup must be a JSON object.')
+      const backup = parsed as { schemaVersion?: unknown; movies?: unknown; episodes?: unknown }
+      const validMap = (value: unknown): value is Record<string, boolean> =>
+        !!value && typeof value === 'object' && !Array.isArray(value) &&
+        Object.entries(value).every(([key, item]) => key.trim().length > 0 && typeof item === 'boolean')
+      if (backup.schemaVersion !== 1 || !validMap(backup.movies) || !validMap(backup.episodes)) {
+        throw new Error('Unsupported or invalid backup file.')
+      }
+      const knownMovieIds = new Set(ordered.map(entry => entry.demoTitle ? entry.id : titleForEntry(entry)?.id).filter((id): id is string => !!id))
+      const knownEpisodeIds = new Set(Object.values(titles).flatMap(title => title.seasons?.flatMap(season => season.episodes.map(episode => episode.id)) ?? []))
+      const movies = Object.fromEntries(Object.entries(backup.movies).filter(([id]) => knownMovieIds.has(id)))
+      const episodes = Object.fromEntries(Object.entries(backup.episodes).filter(([id]) => knownEpisodeIds.has(id)))
+      const ignored = Object.keys(backup.movies).length - Object.keys(movies).length + Object.keys(backup.episodes).length - Object.keys(episodes).length
+      if (!window.confirm(`Import this backup and replace current progress?${ignored ? ` ${ignored} unknown item(s) will be ignored.` : ''}`)) return
+      setWatched(movies)
+      setEpisodeWatched(episodes)
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Could not import progress backup.')
+    }
+  }
+
 
   function openDetails(entry: DisplayEntry) {
     const appShell = document.querySelector('.app-shell')
@@ -306,7 +349,7 @@ export default function App() {
                 </section>
               })}
             </div> : <p className="overview">Episode tracking is unavailable for this demo series until its own series data is added to the catalog.</p>}
-          <div className="progress-actions"><button className="clear-progress-button" onClick={clearProgress}>Clear all progress…</button></div>
+          <div className="progress-actions"><button className="transfer-progress-button" onClick={exportProgress}>Export progress</button><label className="transfer-progress-button import-progress-button">Import progress<input type="file" accept="application/json,.json" onChange={importProgress} aria-label="Import progress backup" /></label><button className="clear-progress-button" onClick={clearProgress}>Clear all progress…</button></div>
           {!storageAvailable && <p className="storage-warning" role="status">Browser storage is unavailable. Progress works for this session only and will be lost when you reload or close this page.</p>}
         </div>
       </section>}
