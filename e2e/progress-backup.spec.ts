@@ -27,7 +27,6 @@ test('invalid progress backup is rejected without replacing current progress', a
   await page.locator('button.timeline-item').first().click()
   await page.getByRole('button', { name: 'Mark as watched' }).click()
 
-  page.once('dialog', (dialog) => dialog.accept())
   page.once('dialog', (dialog) => dialog.dismiss())
   await page.locator('input[aria-label="Import progress backup"]').setInputFiles({
     name: 'invalid.json',
