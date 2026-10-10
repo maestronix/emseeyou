@@ -59,9 +59,10 @@ test('reveals details inline and closes with Escape', async ({ page }) => {
   const details = page.locator('.details-section')
   await expect(details).toBeVisible()
   await expect(page.getByRole('button', { name: 'Close story details' })).toBeFocused()
-  await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden')
+  await expect(page.locator('body')).toHaveCSS('overflow', 'hidden')
   await page.keyboard.press('Escape')
   await expect(details).toHaveCount(0)
+  await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden')
   await expect(ironMan).toBeFocused()
 })
 
