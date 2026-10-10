@@ -205,6 +205,7 @@ export default function App() {
   useLayoutEffect(() => {
     if (!detailsOpen) return
     const previousOverflow = document.body.style.overflow
+    const scrollTop = window.scrollY
     document.body.style.overflow = 'hidden'
 
     const snapshot = transitionSnapshotRef.current
@@ -213,7 +214,6 @@ export default function App() {
     if (snapshot && topContainer && bottomContainer) {
       const topClone = snapshot.cloneNode(true) as HTMLElement
       const bottomClone = snapshot.cloneNode(true) as HTMLElement
-      const scrollTop = window.scrollY
       Object.assign(topClone.style, { position: 'absolute', left: '0', top: `-${scrollTop}px`, width: '100%', pointerEvents: 'none' })
       Object.assign(bottomClone.style, { position: 'absolute', left: '0', top: `-${scrollTop + splitY}px`, width: '100%', pointerEvents: 'none' })
       topContainer.replaceChildren(topClone)
