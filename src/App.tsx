@@ -183,8 +183,6 @@ export default function App() {
   useEffect(() => {
     if (!detailsOpen) return
     previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
     closeButtonRef.current?.focus()
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
@@ -195,10 +193,16 @@ export default function App() {
     window.addEventListener('keydown', onKeyDown)
     return () => {
       window.removeEventListener('keydown', onKeyDown)
-      document.body.style.overflow = previousOverflow
       previousFocusRef.current?.focus()
     }
   }, [detailsOpen, closeDetails])
+
+  useEffect(() => {
+    if (!detailsOpen) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = previousOverflow }
+  }, [detailsOpen])
 
   function moveFocus(direction: number) {
     const selectedIndex = ordered.findIndex(entry => entry.id === selected.id)
