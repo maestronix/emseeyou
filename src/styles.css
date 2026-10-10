@@ -613,7 +613,10 @@ footer > a:last-child { margin-left: auto; }
   border: 1px solid #ffffff24;
   box-shadow: 0 24px 100px #000c;
   animation: detail-overlay-reveal .42s cubic-bezier(.2,.75,.25,1) both;
+  /* Keep timeline entries clickable through unused space in the overlay. */
+  pointer-events: none;
 }
+.details-section.detail-reveal > * { pointer-events: auto; }
 .details-section.detail-reveal.is-closing {
   animation: detail-overlay-hide .36s ease both;
   pointer-events: none;
